@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image as ImageP
 
-UINT_MAX = 0xffffffff
+UINT_MAX = 0xffff_ffff
 
 sq_size = 1280
 RGB_SIZE = 256
@@ -26,11 +26,18 @@ ll_size = ll.size
 uary =np.array(ll, dtype=np.uint8).reshape(sq_size, sq_size, color_ch)
 u_size = uary.size
 
-full_np = np.array([1,0,0], dtype=np.uint8)
-canvas_np = np.full_like((sq_size, sq_size), full_np, dtype=np.uint8)
-
+cr_np = np.full((sq_size, sq_size), 1, dtype=np.uint8)
+cg_np = np.full((sq_size, sq_size), 0, dtype=np.uint8)
+cb_np = np.full((sq_size, sq_size), 0, dtype=np.uint8)
 
 imgp = ImageP.fromarray(uary)
 
 _ = 1
+
+'''
+1111_1111
+1111_1111
+1111_1111
+1111_1111
+'''
 
