@@ -26,6 +26,9 @@ ll_size = ll.size
 uary =np.array(ll, dtype=np.uint8).reshape(sq_size, sq_size, color_ch)
 u_size = uary.size
 
+full_np = np.array([1,0,0], dtype=np.uint8)
+canvas_np = np.full_like((sq_size, sq_size), full_np, dtype=np.uint8)
+
 
 imgp = ImageP.fromarray(uary)
 
