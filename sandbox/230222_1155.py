@@ -3,7 +3,7 @@ from PIL import Image as ImageP
 
 UINT_MAX = 0xffff_ffff
 
-sq_size = 1280
+sq_size = 8
 RGB_SIZE = 256
 color_ch = 3
 
