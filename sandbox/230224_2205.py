@@ -2,11 +2,12 @@ import ctypes
 import struct
 import numpy as np
 from PIL import Image as ImageP
+from pprint import pprint
 
 UINT_MAX = 0xffff_ffff
 k = 0x4567_89ab
 
-sq_size: int = 8
+sq_size: int = 4
 
 width_size = sq_size
 height_size = sq_size
@@ -15,10 +16,18 @@ RGB_SIZE = 255
 color_ch = 3
 
 
+def _vec(x):
+  _vec_array = np.empty(x).astype(np.float32)
+
+
+def vec(x):
+  pass
+
 
 def FragCoord(width, height) -> np.array:
-  _x, _y = np.meshgrid(
-    np.arange(0, width), np.arange(0, height).reshape(height, 1))
+  _row = np.arange(0, width)
+  _col = np.arange(0, height).reshape(height, 1)
+  _x, _y = np.meshgrid(_row, _col)
   _pos = np.empty((width, height, 2)).astype(np.float32)
   _pos[:, :, 0] = _x
   _pos[:, :, 1] = _y
@@ -57,16 +66,12 @@ def hash11(p: np.array) -> np.array:
   return uhash11(n).astype(np.float32) / float(UINT_MAX)
 
 
-#4294_9672_95
-#4265_4433_28
-#2092_9904_64
-#1610_6127_36
-vec1 = np.empty((width_size, height_size, 1)).astype(np.float32)
-vec2 = np.empty((width_size, height_size, 2)).astype(np.float32)
-vec3 = np.empty((width_size, height_size, 3)).astype(np.float32)
+#vec1 = np.empty((width_size, height_size, 1)).astype(np.float32)
+#vec2 = np.empty((width_size, height_size, 2)).astype(np.float32)
+#vec3 = np.empty((width_size, height_size, 3)).astype(np.float32)
 
 pos = FragCoord(width_size, height_size)
-pos2 = np.array([pos[:, :, 1], pos[:, :, 0]])
+pprint(pos[0])
 
 hash_x = hash11(pos[:, :, 0])
 
@@ -76,10 +81,7 @@ canvas_px[:, :, 0] = hash_x * RGB_SIZE
 canvas_px[:, :, 1] = hash_x * RGB_SIZE
 canvas_px[:, :, 2] = hash_x * RGB_SIZE
 
-
 imgp = ImageP.fromarray(canvas_px)
-
-#fbu = floatBitsToUint(1.0)
 
 _ = 1
 
