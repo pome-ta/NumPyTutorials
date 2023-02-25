@@ -53,7 +53,7 @@ fu_unpack = struct.Struct('>I')
 def floatBitsToUint(f: float) -> int:
   fp = fu_pack.pack(f)
   fu = fu_unpack.unpack(fp)[0]
-  return uint32(fu)
+  return fu  #uint32(fu)
 
 
 np_floatBitsToUint = np.vectorize(
@@ -171,36 +171,6 @@ def profile_run():
 
 
 cProfile.run('profile_run()', sort=1)
-
-pos = FragCoord(width_size, height_size)
-vec3 = _vec(width_size, height_size, 3)
-vec3[..., 0] = pos[..., 0]
-vec3[..., 1] = pos[..., 1]
-vec3[..., 2] = u_time
-
-h21 = hash21(pos)
-h22 = hash22(pos)
-h31 = hash31(vec3)
-h33 = hash33(vec3)
-
-canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
-'''
-canvas_px[:, :, 0] = hash_xy[:, :, 0] * RGB_SIZE
-canvas_px[:, :, 1] = hash_xy[..., 1] * RGB_SIZE
-canvas_px[:, :, 2] = RGB_SIZE
-'''
-'''
-canvas_px[:, :, 0] = h21 * RGB_SIZE
-canvas_px[:, :, 1] = h21 * RGB_SIZE
-canvas_px[:, :, 2] = h21 * RGB_SIZE
-'''
-
-canvas_px[:, :, 0] = h33[..., 0] * RGB_SIZE
-canvas_px[:, :, 1] = h33[..., 1] * RGB_SIZE
-canvas_px[:, :, 2] = h33[..., 2] * RGB_SIZE
-
-imgp = ImageP.fromarray(canvas_px)
-imgp.show()
 
 _ = 1
 
