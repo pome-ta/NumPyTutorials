@@ -194,35 +194,24 @@ canvas_px[:, :, 1] = h21 * RGB_SIZE
 canvas_px[:, :, 2] = h21 * RGB_SIZE
 '''
 
-split_div = int(sq_size / 2)
+_div = int(sq_size / 2)
 for div in range(4):
   if div == 0:
-    canvas_px[:split_div, :split_div, 0] = h21[:split_div, :
-                                               split_div] * RGB_SIZE
-    canvas_px[:split_div, :split_div, 1] = h21[:split_div, :
-                                               split_div] * RGB_SIZE
-    canvas_px[:split_div, :split_div, 2] = h21[:split_div, :
-                                               split_div] * RGB_SIZE
+    canvas_px[:_div, :_div, 0] = h21[:_div, :_div] * RGB_SIZE
+    canvas_px[:_div, :_div, 1] = h21[:_div, :_div] * RGB_SIZE
+    canvas_px[:_div, :_div, 2] = h21[:_div, :_div] * RGB_SIZE
   elif div == 1:
-    canvas_px[split_div:, :split_div, 0] = h22[split_div:, :split_div,
-                                               0] * RGB_SIZE
-    canvas_px[split_div:, :split_div, 1] = h22[split_div:, :split_div,
-                                               1] * RGB_SIZE
-    canvas_px[split_div:, :split_div, 2] = RGB_SIZE
+    canvas_px[_div:, :_div, 0] = h22[_div:, :_div, 0] * RGB_SIZE
+    canvas_px[_div:, :_div, 1] = h22[_div:, :_div, 1] * RGB_SIZE
+    canvas_px[_div:, :_div, 2] = RGB_SIZE
   elif div == 2:
-    canvas_px[:split_div, split_div:, 0] = h31[:split_div,
-                                               split_div:] * RGB_SIZE
-    canvas_px[:split_div, split_div:, 1] = h31[:split_div,
-                                               split_div:] * RGB_SIZE
-    canvas_px[:split_div, split_div:, 2] = h31[:split_div,
-                                               split_div:] * RGB_SIZE
+    canvas_px[:_div, _div:, 0] = h31[:_div, _div:] * RGB_SIZE
+    canvas_px[:_div, _div:, 1] = h31[:_div, _div:] * RGB_SIZE
+    canvas_px[:_div, _div:, 2] = h31[:_div, _div:] * RGB_SIZE
   elif div == 3:
-    canvas_px[split_div:, split_div:, 0] = h33[split_div:, split_div:,
-                                               0] * RGB_SIZE
-    canvas_px[split_div:, split_div:, 1] = h33[split_div:, split_div:,
-                                               1] * RGB_SIZE
-    canvas_px[split_div:, split_div:, 2] = h33[split_div:, split_div:,
-                                               2] * RGB_SIZE
+    canvas_px[_div:, _div:, 0] = h33[_div:, _div:, 0] * RGB_SIZE
+    canvas_px[_div:, _div:, 1] = h33[_div:, _div:, 1] * RGB_SIZE
+    canvas_px[_div:, _div:, 2] = h33[_div:, _div:, 2] * RGB_SIZE
 
 # canvas_px[:split_div, :split_div, 0] = h33[:split_div, :split_div, 0] * RGB_SIZE
 # canvas_px[int(sq_size / 2):, int(sq_size / 2):, 0] = h33[int(sq_size / 2):, int(sq_size / 2):, 0] * RGB_SIZE
