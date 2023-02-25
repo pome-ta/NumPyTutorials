@@ -5,6 +5,7 @@ from functools import lru_cache
 import numpy as np
 from PIL import Image as ImageP
 
+import cProfile
 from pprint import pprint
 
 UINT_MAX = 0xffff_ffff
@@ -40,8 +41,8 @@ def FragCoord(width, height) -> np.array:
 
 @lru_cache()
 def uint32(s) -> int:
-  _s = s if s > 0 else 0
-  return int(_s) if _s <= UINT_MAX else ctypes.c_uint32(int(_s)).value
+  _s = int(s if s > 0 else 0)
+  return _s if _s <= UINT_MAX else ctypes.c_uint32(_s).value
 
 
 fu_pack = struct.Struct('>f')
@@ -137,6 +138,40 @@ def hash31(p: np.array) -> np.array:
   return _h33[..., 0] / float(UINT_MAX)
 
 
+def profile_run():
+
+  pos = FragCoord(width_size, height_size)
+  vec3 = _vec(width_size, height_size, 3)
+  vec3[..., 0] = pos[..., 0]
+  vec3[..., 1] = pos[..., 1]
+  vec3[..., 2] = u_time
+
+  h21 = hash21(pos)
+  h22 = hash22(pos)
+  h31 = hash31(vec3)
+  h33 = hash33(vec3)
+
+  canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
+  '''
+  canvas_px[:, :, 0] = hash_xy[:, :, 0] * RGB_SIZE
+  canvas_px[:, :, 1] = hash_xy[..., 1] * RGB_SIZE
+  canvas_px[:, :, 2] = RGB_SIZE
+  '''
+  '''
+  canvas_px[:, :, 0] = h21 * RGB_SIZE
+  canvas_px[:, :, 1] = h21 * RGB_SIZE
+  canvas_px[:, :, 2] = h21 * RGB_SIZE
+  '''
+
+  canvas_px[:, :, 0] = h33[..., 0] * RGB_SIZE
+  canvas_px[:, :, 1] = h33[..., 1] * RGB_SIZE
+  canvas_px[:, :, 2] = h33[..., 2] * RGB_SIZE
+
+  imgp = ImageP.fromarray(canvas_px)
+
+
+cProfile.run('profile_run()', sort=1)
+
 pos = FragCoord(width_size, height_size)
 vec3 = _vec(width_size, height_size, 3)
 vec3[..., 0] = pos[..., 0]
@@ -165,9 +200,7 @@ canvas_px[:, :, 1] = h33[..., 1] * RGB_SIZE
 canvas_px[:, :, 2] = h33[..., 2] * RGB_SIZE
 
 imgp = ImageP.fromarray(canvas_px)
-
-# a = np.arange(18).reshape((3, 3, 2))
-# aa = a[:, 1:]
+imgp.show()
 
 _ = 1
 
