@@ -4,8 +4,6 @@ from functools import lru_cache
 import numpy as np
 from PIL import Image as ImageP
 
-import cProfile
-from pprint import pprint
 
 UINT_MAX = 0xffff_ffff
 
