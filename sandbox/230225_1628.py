@@ -195,6 +195,7 @@ canvas_px[:, :, 2] = h21 * RGB_SIZE
 '''
 
 _div = int(sq_size / 2)
+
 for div in range(4):
   if div == 0:
     canvas_px[:_div, :_div, 0] = h21[:_div, :_div] * RGB_SIZE
