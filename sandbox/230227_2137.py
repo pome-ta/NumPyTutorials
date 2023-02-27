@@ -2,6 +2,8 @@ import struct
 from itertools import product
 from functools import lru_cache
 
+import cProfile
+
 import numpy as np
 from PIL import Image as ImageP
 
@@ -10,7 +12,7 @@ UINT_MAX = 0xffff_ffff
 k = np.array([0x456789ab, 0x6789ab45, 0x89ab4567]).astype(np.uint32)
 u = np.array([1, 2, 3]).astype(np.uint32)
 
-sq_size: int = 512
+sq_size: int = 320
 
 width_size = sq_size
 height_size = sq_size
@@ -46,6 +48,7 @@ def _vec(w: int, h: int, c: int) -> np.array:
     return np.empty((w, h, c)).astype(np.float32)
 
 
+@lru_cache
 def FragCoord(width, height) -> np.array:
     _row = np.arange(0, width)
     _col = np.arange(0, height).reshape(height, 1)
@@ -187,45 +190,48 @@ def imageP2uint8_convert(_rgb):
     return _l
 
 
-canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
-fragCoord = FragCoord(width_size, height_size)
-# pos = (fragCoord * 2.0 - sq_size) / sq_size
-pos = fragCoord / sq_size
-pos = 10.0 * pos + u_time
+def profile_run():
+    canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
+    fragCoord = FragCoord(width_size, height_size)
+    # pos = (fragCoord * 2.0 - sq_size) / sq_size
+    pos = fragCoord / sq_size
+    pos = 10.0 * pos + u_time
+    
+    vec3 = _vec(width_size, height_size, 3)
+    vec3[..., 0] = pos[..., 0]
+    vec3[..., 1] = pos[..., 1]
+    vec3[..., 2] = u_time
+    
+    v21_n = vnoise21_n(pos)
+    v21_f = vnoise21_f(pos)
+    v31 = vnoise31(vec3)
+    
+    out_n = imageP2uint8_convert(v21_n)
+    out_f = imageP2uint8_convert(v21_f)
+    out_3 = imageP2uint8_convert(v31)
+    
+    split_num = int(sq_size / 3)
+    
+    for div in range(3):
+        if div == 0:
+            for i in range(3):
+                s = split_num * div
+                e = split_num * (div + 1)
+                canvas_px[..., s:e, i] = out_n[..., s:e]
+        if div == 1:
+            for i in range(3):
+                s = split_num * div + 1
+                e = split_num * (div + 1)
+                canvas_px[..., s:e, i] = out_f[..., s:e]
+        if div == 2:
+            for i in range(3):
+                s = split_num * div + 1
+                e = sq_size
+                canvas_px[..., s:e, i] = out_3[..., s:e]
+    
+    imgp = ImageP.fromarray(canvas_px)
 
-vec3 = _vec(width_size, height_size, 3)
-vec3[..., 0] = pos[..., 0]
-vec3[..., 1] = pos[..., 1]
-vec3[..., 2] = u_time
 
-v21_n = vnoise21_n(pos)
-v21_f = vnoise21_f(pos)
-v31 = vnoise31(vec3)
-
-out_n = imageP2uint8_convert(v21_n)
-out_f = imageP2uint8_convert(v21_f)
-out_3 = imageP2uint8_convert(v31)
-
-split_num = int(sq_size / 3)
-
-for div in range(3):
-    if div == 0:
-        for i in range(3):
-            s = split_num * div
-            e = split_num * (div + 1)
-            canvas_px[..., s:e, i] = out_n[..., s:e]
-    if div == 1:
-        for i in range(3):
-            s = split_num * div + 1
-            e = split_num * (div + 1)
-            canvas_px[..., s:e, i] = out_f[..., s:e]
-    if div == 2:
-        for i in range(3):
-            s = split_num * div + 1
-            e = sq_size
-            canvas_px[..., s:e, i] = out_3[..., s:e]
-
-imgp = ImageP.fromarray(canvas_px)
-imgp.show()
+cProfile.run('profile_run()', sort=1)
 
 _ = 1
