@@ -35,23 +35,27 @@ def FragCoord(width, height) -> np.array:
   return _pos
 
 
-fu_pack = struct.Struct('>f')
-fu_unpack = struct.Struct('>I')
-
-
+f_pack = struct.Struct('>f')
+f_unpack = struct.Struct('>I')
+'''
 @lru_cache()
 def floatBitsToUint(f: float) -> int:
-  return fu_unpack.unpack(fu_pack.pack(f))[0]
-
+  return f_unpack.unpack(f_pack.pack(f))[0]
 
 def _mix(x, y, a):
   return (x * (1 - a)) + (y * a)
-
 
 np_floatBitsToUint = np.vectorize(
   floatBitsToUint, otypes=[np.uint32], cache=True)
 
 np_mix = np.vectorize(_mix, otypes=[np.float32], cache=True)
+'''
+
+np_floatBitsToUint = np.vectorize(
+  lambda f: f_unpack.unpack(f_pack.pack(f))[0], otypes=[np.uint32], cache=True)
+
+np_mix = np.vectorize(
+  lambda x, y, a: (x * (1 - a)) + (y * a), otypes=[np.float32], cache=True)
 
 
 def uhash11(n: np.array) -> np.array:
