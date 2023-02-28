@@ -24,9 +24,12 @@ color_ch = 3
 
 u_time = 0.4321
 _xy = range(2)
+product_list2 = list(product(_xy, repeat=2))
+product_list3 = list(product(_xy, repeat=3))
 
 testImg_path = Path(f'./testImg/test_img{sq_size:03}.npy')
 
+'''
 f_pack = struct.Struct('>f')
 f_unpack = struct.Struct('>I')
 
@@ -38,6 +41,11 @@ def floatBitsToUint(f: float) -> int:
 
 np_floatBitsToUint = np.vectorize(
   floatBitsToUint, otypes=[np.uint32], cache=True)
+'''
+
+def np_floatBitsToUint(f: np.array) -> np.array:
+  shape = f.shape
+  return np.reshape(np.frombuffer(np.array(f, dtype='f'), dtype=np.uint32), shape)
 
 
 def np_mix(x: np.array, y: np.array, a: np.array) -> np.array:
@@ -152,7 +160,8 @@ def hash31(p: np.array) -> np.array:
 
 def vnoise21_n(p: np.array) -> np.array:
   n = np.floor(p)
-  v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
+  #v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
+  v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
   f = p - n
   return np_mix(
     np_mix(v[0], v[1], f[..., 0]),
@@ -162,7 +171,8 @@ def vnoise21_n(p: np.array) -> np.array:
 
 def vnoise21_f(p: np.array) -> np.array:
   n = np.floor(p)
-  v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
+  #v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
+  v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
   f = p - n
   f = f * f * (3.0 - 2.0 * f)
   return np_mix(
@@ -173,7 +183,8 @@ def vnoise21_f(p: np.array) -> np.array:
 
 def vnoise31(p: np.array) -> np.array:
   n = np.floor(p)
-  v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product(_xy, repeat=3)]
+  #v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product(_xy, repeat=3)]
+  v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product_list3]
   f = p - n
   f = f * f * (3.0 - 2.0 * f)
 
@@ -265,7 +276,7 @@ def main(profile: bool=False):
 
 
 if __name__ == '__main__':
-  dev_run = 1
+  dev_run = 0
   main(dev_run)
   _ = 1
 
