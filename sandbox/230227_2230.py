@@ -269,7 +269,7 @@ def main(profile: bool=False):
 
 
 if __name__ == '__main__':
-  dev_run = 1
+  dev_run = 0
   main(dev_run)
   _ = 1
 
