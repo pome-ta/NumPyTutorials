@@ -14,7 +14,7 @@ UINT_MAX = 0xffff_ffff
 k = np.array([0x456789ab, 0x6789ab45, 0x89ab4567]).astype(np.uint32)
 u = np.array([1, 2, 3]).astype(np.uint32)
 
-sq_size: int = 320
+sq_size: int = 512
 
 width_size = sq_size
 height_size = sq_size
@@ -41,10 +41,14 @@ def _mix(x, y, a):
   return (x * (1.0 - a)) + (y * a)
 
 
+def np_mix(x: np.array, y: np.array, a: np.array) -> np.array:
+  return (x * (1.0 - a)) + (y * a)
+
+
 np_floatBitsToUint = np.vectorize(
   floatBitsToUint, otypes=[np.uint32], cache=True)
 
-np_mix = np.vectorize(_mix, otypes=[np.float32], cache=True)
+_np_mix = np.vectorize(_mix, otypes=[np.float32], cache=True)
 
 
 @lru_cache()
@@ -82,10 +86,13 @@ def uhash22(n: np.array) -> np.array:
   _n[..., 1] = n[..., 0]
   n ^= (_n << u[:2])
 
+  #n ^= (n[..., [1, 0]] << u[:2])
+
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 0]
   n ^= (_n >> u[:2])
+  #n ^= (n[..., [1, 0]] >> u[:2])
 
   n *= k[:2]
 
@@ -93,6 +100,9 @@ def uhash22(n: np.array) -> np.array:
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 0]
   n ^= (_n << u[:2])
+
+  #n ^= (n[..., [1, 0]] << u[:2])
+
   return n * k[:2]
 
 
@@ -103,11 +113,15 @@ def uhash33(n: np.array) -> np.array:
   _n[..., 2] = n[..., 0]
   n ^= (_n << u)
 
+  #n ^= (n[..., [1, 2, 0]] << u)
+
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 2]
   _n[..., 2] = n[..., 0]
   n ^= (_n >> u)
+
+  #n ^= (n[..., [1, 2, 0]] >> u)
 
   n *= k
 
@@ -116,6 +130,8 @@ def uhash33(n: np.array) -> np.array:
   _n[..., 1] = n[..., 2]
   _n[..., 2] = n[..., 0]
   n ^= (_n << u)
+
+  #n ^= (n[..., [1, 2, 0]] << u)
   return n * k
 
 
@@ -230,9 +246,21 @@ def main(profile: bool=False):
     canvas = profile_run()
     # np.save(str(testImg_path), canvas)
     test_img = np.load(str(testImg_path))
-    print(np.all(canvas == test_img))
+    if not (np.all(canvas == test_img)):
+      print('ng ---')
+      diff = np.subtract(canvas, test_img)
+      for xi, rows in enumerate(diff):
+        for yi, i in enumerate(rows):
+          # todo: `all` にて、`0` であれば差分なしで、`False`
+          if np.all(i):
+            print(f'{xi:03}:{yi:03}_{i}')
+            print(f'canvas{canvas[xi][yi]}')
+            print(f'tesimg{test_img[xi][yi]}')
+          else:
+            continue
+
     imgp = ImageP.fromarray(canvas)
-    is_show = False
+    is_show = 0
     if is_show:
       imgp.show()
 
@@ -241,7 +269,7 @@ def main(profile: bool=False):
 
 
 if __name__ == '__main__':
-  dev_run = True
+  dev_run = 1
   main(dev_run)
   _ = 1
 
