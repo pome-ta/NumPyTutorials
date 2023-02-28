@@ -237,20 +237,23 @@ def profile_run():
 def main(profile: bool=False):
   if profile:
     canvas = profile_run()
-    # np.save(str(testImg_path), canvas)
-    test_img = np.load(str(testImg_path))
-    if not (np.all(canvas == test_img)):
-      print('ng ---')
-      diff = np.subtract(canvas, test_img)
-      for xi, rows in enumerate(diff):
-        for yi, i in enumerate(rows):
-          # todo: `all` にて、`0` であれば差分なしで、`False`
-          if np.all(i):
-            print(f'{xi:03}:{yi:03}_{i}')
-            print(f'canvas{canvas[xi][yi]}')
-            print(f'tesimg{test_img[xi][yi]}')
-          else:
-            continue
+    is_save = 1
+    if is_save:
+      np.save(str(testImg_path), canvas)
+    else:
+      test_img = np.load(str(testImg_path))
+      if not (np.all(canvas == test_img)):
+        print('ng ---')
+        diff = np.subtract(canvas, test_img)
+        for xi, rows in enumerate(diff):
+          for yi, i in enumerate(rows):
+            # todo: `all` にて、`0` であれば差分なしで、`False`
+            if np.all(i):
+              print(f'{xi:03}:{yi:03}_{i}')
+              print(f'canvas{canvas[xi][yi]}')
+              print(f'tesimg{test_img[xi][yi]}')
+            else:
+              continue
 
     imgp = ImageP.fromarray(canvas)
     is_show = 0
@@ -262,7 +265,7 @@ def main(profile: bool=False):
 
 
 if __name__ == '__main__':
-  dev_run = 0
+  dev_run = 1
   main(dev_run)
   _ = 1
 
