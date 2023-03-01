@@ -181,12 +181,8 @@ def vnoise31(p: np.array) -> np.array:
 
 def grad(p: np.array) -> np.array:
   eps = 0.001
-  x1 = vnoise21_n(p + [eps, 0.0])
-  x2 = vnoise21_n(p - [eps, 0.0])
-  y1 = vnoise21_n(p + [0.0, eps])
-  y2 = vnoise21_n(p - [0.0, eps])
-  x = x1 - x2
-  y = y1 - y2
+  x = vnoise21_f(p + [eps, 0.0]) - vnoise21_f(p - [eps, 0.0])
+  y = vnoise21_f(p + [0.0, eps]) - vnoise21_f(p - [0.0, eps])
   _w, _h, _c = p.shape
   vec2 = _vec(_w, _h, _c)
   vec2[..., 0] = x
