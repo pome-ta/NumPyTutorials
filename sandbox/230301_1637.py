@@ -201,85 +201,44 @@ def imageP2uint8_convert(_rgb):
   return _l
 
 
-def profile_run():
-  canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
-  fragCoord = FragCoord(width_size, height_size)
-  # pos = (fragCoord * 2.0 - sq_size) / sq_size
-  pos = fragCoord / sq_size
-  pos = 10.0 * pos + u_time
 
-  vec3 = _vec(width_size, height_size, 3)
-  vec3[..., 0] = pos[..., 0]
-  vec3[..., 1] = pos[..., 1]
-  vec3[..., 2] = u_time
-
-  np_grad = grad(pos)
-  np_ones = np.ones_like(np_grad)
-  #np_dot = np.dot(np_ones, np_grad)
-  
-  
-
-  v21_n = vnoise21_n(pos)
-  v21_f = vnoise21_f(pos)
-  v31 = vnoise31(vec3)
-
-  out_n = imageP2uint8_convert(v21_n)
-  out_f = imageP2uint8_convert(v21_f)
-  out_3 = imageP2uint8_convert(v31)
-
-  split_num = int(sq_size / 3)
-
-  for div in range(3):
-    if div == 0:
-      for i in range(3):
-        s = split_num * div
-        e = split_num * (div + 1)
-        canvas_px[..., s:e, i] = out_n[..., s:e]
-    if div == 1:
-      for i in range(3):
-        s = split_num * div + 1
-        e = split_num * (div + 1)
-        canvas_px[..., s:e, i] = out_f[..., s:e]
-    if div == 2:
-      for i in range(3):
-        s = split_num * div + 1
-        e = sq_size
-        canvas_px[..., s:e, i] = out_3[..., s:e]
-  return canvas_px
+canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
+fragCoord = FragCoord(width_size, height_size)
+# pos = (fragCoord * 2.0 - sq_size) / sq_size
+pos = fragCoord / sq_size
+pos = 26.0 * pos + u_time
 
 
-def main(profile: bool=False):
-  if profile:
-    canvas = profile_run()
-    is_save = 0
-    if is_save:
-      np.save(str(testImg_path), canvas)
-    else:
-      test_img = np.load(str(testImg_path))
-      if not (np.all(canvas == test_img)):
-        print('ng ---')
-        diff = np.subtract(canvas, test_img)
-        for xi, rows in enumerate(diff):
-          for yi, i in enumerate(rows):
-            # todo: `all` にて、`0` であれば差分なしで、`False`
-            if np.all(i):
-              print(f'{xi:03}:{yi:03}_{i}')
-              print(f'canvas{canvas[xi][yi]}')
-              print(f'tesimg{test_img[xi][yi]}')
-            else:
-              continue
-
-    imgp = ImageP.fromarray(canvas)
-    is_show = 0
-    if is_show:
-      imgp.show()
-
-  else:
-    cProfile.run('profile_run()', sort=1)
+np_grad = grad(pos)
+one_w, one_h, _ = np_grad.shape
+#np_ones = np.ones_like(np_grad)
+np_ones = np.ones((one_w,one_h))
+#np_dot1 = np.dot(np_ones[..., 0], np_grad[...,0])
+#np_dot2 = np.dot(np_ones[...,1], np_grad[...,1])
+np_dot = np.dot(np_ones, np_grad)
+#np_dot = np.dot(np_ones, np_grad)
+#np_dot = np_ones @ np_grad
+#np_dot = np.dot(sum(np_ones[..., 0] * np_grad[...,0]), sum(np_ones[..., 1] * np_grad[...,1]))
+#np_dot = np.dot(np_ones, np_grad)
+#print(np_grad.shape)
+#print(np_grad[...,1].shape)
+print(np_dot.shape)
 
 
-if __name__ == '__main__':
-  dev_run = 1
-  main(dev_run)
-  _ = 1
+vec3 = _vec(width_size, height_size, 3)
+vec3[..., 0] = pos[..., 0]
+vec3[..., 1] = pos[..., 1]
+vec3[..., 2] = u_time
+
+#print(vec3[..., 0].shape)
+#print(np_dot.shape)
+u_grad = imageP2uint8_convert(np_grad)
+canvas_px[..., 0] = u_grad[...,0]
+canvas_px[..., 1] = u_grad[...,1]
+#canvas_px[..., 2] = imageP2uint8_convert(np_dot)
+imgp = ImageP.fromarray(canvas_px)
+
+
+
+_ = 1
 
