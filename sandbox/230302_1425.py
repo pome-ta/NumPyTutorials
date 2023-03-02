@@ -187,32 +187,21 @@ def imageP2uint8_convert(_rgb):
 
 canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
 fragCoord = FragCoord(width_size, height_size)
-# pos = (fragCoord * 2.0 - sq_size) / sq_size
 pos = fragCoord / sq_size
-pos = 26.0 * pos + u_time
+pos = 16.0 * pos + u_time
 
 np_grad = grad(pos)
-_w, _h, _c = np_grad.shape
-np_grad1 = np.reshape(np_grad, (_w* _h, _c))
-#np_ones = np.ones_like(np_grad1)
+_, _, _index = np_grad.shape
+np_dot = sum([1 * np_grad[..., i] for i in range(_index)])
 
-np_dot1 = np.dot(1, np_grad1)
-np_dot = np.reshape(np_dot1, (_w, _h, _c))
+u_dot = imageP2uint8_convert(np_dot)
 
-vec3 = _vec(width_size, height_size, 3)
-vec3[..., 0] = pos[..., 0]
-vec3[..., 1] = pos[..., 1]
-vec3[..., 2] = u_time
-
-#u_grad = imageP2uint8_convert(np_grad)
-u_grad = imageP2uint8_convert(np_dot)
-
-canvas_px[..., 0] = u_grad
-canvas_px[..., 1] = u_grad
-# canvas_px[..., 2] = imageP2uint8_convert(np_dot)
+canvas_px[..., 0] = u_dot
+canvas_px[..., 1] = u_dot
+canvas_px[..., 2] = u_dot
 imgp = ImageP.fromarray(canvas_px)
 
-is_show = False
+is_show = True
 if is_show:
     imgp.show()
 

@@ -77,4 +77,10 @@ _e[1:3, 1:4] = 0
 
 # ブロードキャスト
 
+aaa = np.array([1, 2, 3])
+bbb = np.array([2, 2, 2])
+
+cca = aaa * bbb
+ccb = aaa * 2
+
 _ = 1
