@@ -141,11 +141,22 @@ def vnoise21_n(p: np.array) -> np.array:
     f[..., 1], )
 
 
-def vnoise21_f(p: np.array) -> np.array:
+def vnoise21_h(p: np.array) -> np.array:
   n = np.floor(p)
   v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
   f = p - n
   f = f * f * (3.0 - 2.0 * f)
+  return np_mix(
+    np_mix(v[0], v[1], f[..., 0]),
+    np_mix(v[2], v[3], f[..., 0]),
+    f[..., 1], )
+
+
+def vnoise21_q(p: np.array) -> np.array:
+  n = np.floor(p)
+  v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
+  f = p - n
+  f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
   return np_mix(
     np_mix(v[0], v[1], f[..., 0]),
     np_mix(v[2], v[3], f[..., 0]),
@@ -167,10 +178,21 @@ def vnoise31(p: np.array) -> np.array:
   return np_mix(w[0], w[1], f[..., 2])
 
 
-def grad(p: np.array) -> np.array:
+def grad_h(p: np.array) -> np.array:
   eps = 0.001
-  x = vnoise21_f(p + [eps, 0.0]) - vnoise21_f(p - [eps, 0.0])
-  y = vnoise21_f(p + [0.0, eps]) - vnoise21_f(p - [0.0, eps])
+  x = vnoise21_h(p + [eps, 0.0]) - vnoise21_h(p - [eps, 0.0])
+  y = vnoise21_h(p + [0.0, eps]) - vnoise21_h(p - [0.0, eps])
+  _w, _h, _c = p.shape
+  vec2 = _vec(_w, _h, _c)
+  vec2[..., 0] = x
+  vec2[..., 1] = y
+  return 0.5 * vec2 / eps
+
+
+def grad_q(p: np.array) -> np.array:
+  eps = 0.001
+  x = vnoise21_q(p + [eps, 0.0]) - vnoise21_q(p - [eps, 0.0])
+  y = vnoise21_q(p + [0.0, eps]) - vnoise21_q(p - [0.0, eps])
   _w, _h, _c = p.shape
   vec2 = _vec(_w, _h, _c)
   vec2[..., 0] = x
@@ -188,17 +210,30 @@ def imageP2uint8_convert(_rgb):
 canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
 fragCoord = FragCoord(width_size, height_size)
 pos = fragCoord / sq_size
-pos = 16.0 * pos + u_time
+pos = 6.0 * pos + u_time
 
-np_grad = grad(pos)
-_, _, _index = np_grad.shape
-np_dot = sum([1 * np_grad[..., i] for i in range(_index)])
+# xxx: 2回やるの無駄感あるけど
+np_gh = grad_h(pos)
+_, _, _index = np_gh.shape
+np_dot_h = sum([1 * np_gh[..., i] for i in range(_index)])
 
-u_dot = imageP2uint8_convert(np_dot)
+np_gq = grad_q(pos)
+_, _, _index = np_gq.shape
+np_dot_q = sum([1 * np_gq[..., i] for i in range(_index)])
 
-canvas_px[..., 0] = u_dot
-canvas_px[..., 1] = u_dot
-canvas_px[..., 2] = u_dot
+u_dot_h = imageP2uint8_convert(np_dot_h)
+u_dot_q = imageP2uint8_convert(np_dot_q)
+
+splt = int(sq_size / 2)
+
+canvas_px[..., 0:splt, 0] = u_dot_h[..., 0:splt]
+canvas_px[..., 0:splt, 1] = u_dot_h[..., 0:splt]
+canvas_px[..., 0:splt, 2] = u_dot_h[..., 0:splt]
+
+canvas_px[..., splt:sq_size, 0] = u_dot_q[..., splt:sq_size]
+canvas_px[..., splt:sq_size, 1] = u_dot_q[..., splt:sq_size]
+canvas_px[..., splt:sq_size, 2] = u_dot_q[..., splt:sq_size]
+
 imgp = ImageP.fromarray(canvas_px)
 
 is_show = True
