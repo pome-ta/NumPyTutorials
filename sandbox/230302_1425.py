@@ -193,19 +193,22 @@ pos = 26.0 * pos + u_time
 
 np_grad = grad(pos)
 _w, _h, _c = np_grad.shape
-np_grad2b2 = np.reshape(np_grad, (_c, _w * _h))
-np_ones = np.ones_like(np_grad2b2)
+np_grad1 = np.reshape(np_grad, (_w* _h, _c))
+#np_ones = np.ones_like(np_grad1)
 
-np_dot = np.dot(np_ones, np_grad2b2)
+np_dot1 = np.dot(1, np_grad1)
+np_dot = np.reshape(np_dot1, (_w, _h, _c))
 
 vec3 = _vec(width_size, height_size, 3)
 vec3[..., 0] = pos[..., 0]
 vec3[..., 1] = pos[..., 1]
 vec3[..., 2] = u_time
 
-u_grad = imageP2uint8_convert(np_grad)
-canvas_px[..., 0] = u_grad[..., 0]
-canvas_px[..., 1] = u_grad[..., 1]
+#u_grad = imageP2uint8_convert(np_grad)
+u_grad = imageP2uint8_convert(np_dot)
+
+canvas_px[..., 0] = u_grad
+canvas_px[..., 1] = u_grad
 # canvas_px[..., 2] = imageP2uint8_convert(np_dot)
 imgp = ImageP.fromarray(canvas_px)
 
