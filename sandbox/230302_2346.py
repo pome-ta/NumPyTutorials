@@ -2,6 +2,7 @@ from itertools import product
 from functools import lru_cache
 
 from pathlib import Path
+import cProfile
 
 import numpy as np
 from PIL import Image as ImageP
@@ -209,36 +210,36 @@ def imageP2uint8_convert(_rgb):
 
 canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
 fragCoord = FragCoord(width_size, height_size)
-pos = fragCoord / sq_size
-pos = 6.0 * pos + u_time
+def main():
+  
+  pos = fragCoord / sq_size
+  pos = 6.0 * pos + u_time
+  
+  # xxx: 2回やるの無駄感あるけど
+  np_gh = grad_h(pos)
+  _, _, _index = np_gh.shape
+  np_dot_h = sum([1 * np_gh[..., i] for i in range(_index)])
+  
+  np_gq = grad_q(pos)
+  _, _, _index = np_gq.shape
+  np_dot_q = sum([1 * np_gq[..., i] for i in range(_index)])
+  
+  u_dot_h = imageP2uint8_convert(np_dot_h)
+  u_dot_q = imageP2uint8_convert(np_dot_q)
+  
+  splt = int(sq_size / 2)
+  
+  canvas_px[..., 0:splt, 0] = u_dot_h[..., 0:splt]
+  canvas_px[..., 0:splt, 1] = u_dot_h[..., 0:splt]
+  canvas_px[..., 0:splt, 2] = u_dot_h[..., 0:splt]
+  
+  canvas_px[..., splt:sq_size, 0] = u_dot_q[..., splt:sq_size]
+  canvas_px[..., splt:sq_size, 1] = u_dot_q[..., splt:sq_size]
+  canvas_px[..., splt:sq_size, 2] = u_dot_q[..., splt:sq_size]
+  
+  imgp = ImageP.fromarray(canvas_px)
 
-# xxx: 2回やるの無駄感あるけど
-np_gh = grad_h(pos)
-_, _, _index = np_gh.shape
-np_dot_h = sum([1 * np_gh[..., i] for i in range(_index)])
-
-np_gq = grad_q(pos)
-_, _, _index = np_gq.shape
-np_dot_q = sum([1 * np_gq[..., i] for i in range(_index)])
-
-u_dot_h = imageP2uint8_convert(np_dot_h)
-u_dot_q = imageP2uint8_convert(np_dot_q)
-
-splt = int(sq_size / 2)
-
-canvas_px[..., 0:splt, 0] = u_dot_h[..., 0:splt]
-canvas_px[..., 0:splt, 1] = u_dot_h[..., 0:splt]
-canvas_px[..., 0:splt, 2] = u_dot_h[..., 0:splt]
-
-canvas_px[..., splt:sq_size, 0] = u_dot_q[..., splt:sq_size]
-canvas_px[..., splt:sq_size, 1] = u_dot_q[..., splt:sq_size]
-canvas_px[..., splt:sq_size, 2] = u_dot_q[..., splt:sq_size]
-
-imgp = ImageP.fromarray(canvas_px)
-
-is_show = True
-if is_show:
-  imgp.show()
+cProfile.run('main()', sort=1)
 
 _ = 1
 
