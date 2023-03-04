@@ -1,5 +1,4 @@
 from itertools import product
-from functools import lru_cache
 
 from pathlib import Path
 import cProfile
@@ -38,23 +37,19 @@ def np_mix(x: np.array, y: np.array, a: np.array) -> np.array:
   return (x * (1.0 - a)) + (y * a)
 
 
-@lru_cache()
 def _vec(w: int, h: int, c: int) -> np.array:
   return np.empty((w, h, c)).astype(np.float32)
 
 
-@lru_cache()
 def FragCoord(width, height) -> np.array:
   _row = np.arange(0, width)
-  _col = np.arange(0, height).reshape(height, 1)
+  _col = _row[:np.newaxis]
   # return np.dstack(np.meshgrid(_row, _col))
-  #
-  # _x, _y = np.meshgrid(_row, _col)
-  # _pos = _vec(width, height, 2)
-  # _pos[..., 0] = _x
-  # _pos[..., 1] = _y
-  # return _pos
-  return np.dstack(np.meshgrid(_row, _col))
+  _x, _y = np.meshgrid(_row, _col)
+  _pos = _vec(width, height, 2)
+  _pos[..., 0] = _x
+  _pos[..., 1] = _y
+  return _pos
 
 
 def uhash11(n: np.array) -> np.array:
@@ -68,6 +63,7 @@ def uhash11(n: np.array) -> np.array:
 def hash11(p: np.array) -> np.array:
   n = np_floatBitsToUint(p)
   return uhash11(n).astype(np.float32) / float(UINT_MAX)
+
 
 
 def uhash22(n: np.array) -> np.array:
@@ -159,7 +155,7 @@ def vnoise31(p: np.array) -> np.array:
   return np_mix(w[0], w[1], f[..., 2])
 
 
-def imageP2uint8_convert(_rgb):
+def convert_uint8_rgb(_rgb):
   _l = _rgb * RGB_SIZE
   _l[np.less(_l, 0)] = 0
   _l[np.less(RGB_SIZE, _l)] = RGB_SIZE
@@ -181,9 +177,9 @@ def profile_run():
   v21_f = vnoise21_f(pos)
   v31 = vnoise31(vec3)
 
-  out_n = imageP2uint8_convert(v21_n)
-  out_f = imageP2uint8_convert(v21_f)
-  out_3 = imageP2uint8_convert(v31)
+  out_n = convert_uint8_rgb(v21_n)
+  out_f = convert_uint8_rgb(v21_f)
+  out_3 = convert_uint8_rgb(v31)
 
   split_num = int(sq_size / 3)
 
@@ -237,7 +233,7 @@ def main(profile: bool=False):
 
 
 if __name__ == '__main__':
-  dev_run = False
+  dev_run = 0
   main(dev_run)
   _ = 1
 
