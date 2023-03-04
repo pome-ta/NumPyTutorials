@@ -72,6 +72,8 @@ def hash11(p: np.array) -> np.array:
 
 
 def uhash22(n: np.array) -> np.array:
+  _u = u[:2]
+  _k = k[:2]
   '''
   _n = n.copy()
   _n[..., 0] = n[..., 1]
@@ -79,7 +81,7 @@ def uhash22(n: np.array) -> np.array:
   n ^= (_n << u[:2])
   '''
   x, y = np.dsplit(n, 2)
-  n ^= (np.dstack([y, x]) << u[:2])
+  n ^= (np.dstack([y, x]) << _u)
   '''
   _n = n.copy()
   _n[..., 0] = n[..., 1]
@@ -87,9 +89,9 @@ def uhash22(n: np.array) -> np.array:
   n ^= (_n >> u[:2])
   '''
   x, y = np.dsplit(n, 2)
-  n ^= (np.dstack([y, x]) >> u[:2])
+  n ^= (np.dstack([y, x]) >> _u)
 
-  n *= k[:2]
+  n *= _k
   '''
   _n = n.copy()
   _n[..., 0] = n[..., 1]
@@ -97,8 +99,8 @@ def uhash22(n: np.array) -> np.array:
   n ^= (_n << u[:2])
   '''
   x, y = np.dsplit(n, 2)
-  n ^= (np.dstack([y, x]) << u[:2])
-  return n * k[:2]
+  n ^= (np.dstack([y, x]) << _u)
+  return n * _k
 
 
 def uhash33(n: np.array) -> np.array:
