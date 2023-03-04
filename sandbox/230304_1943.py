@@ -49,6 +49,8 @@ def _vec(w: int, h: int, c: int) -> np.array:
 def FragCoord(width, height) -> np.array:
   _row = np.arange(0, width)
   _col = np.arange(0, height).reshape(height, 1)
+  #return np.dstack(np.meshgrid(_row, _col))
+
   _x, _y = np.meshgrid(_row, _col)
   _pos = _vec(width, height, 2)
   _pos[..., 0] = _x
@@ -70,47 +72,66 @@ def hash11(p: np.array) -> np.array:
 
 
 def uhash22(n: np.array) -> np.array:
+  '''
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 0]
   n ^= (_n << u[:2])
-
+  '''
+  x, y = np.dsplit(n, 2)
+  n ^= (np.dstack([y, x]) << u[:2])
+  '''
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 0]
   n ^= (_n >> u[:2])
+  '''
+  x, y = np.dsplit(n, 2)
+  n ^= (np.dstack([y, x]) >> u[:2])
 
   n *= k[:2]
-
+  '''
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 0]
   n ^= (_n << u[:2])
+  '''
+  x, y = np.dsplit(n, 2)
+  n ^= (np.dstack([y, x]) << u[:2])
   return n * k[:2]
 
 
 def uhash33(n: np.array) -> np.array:
+  '''
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 2]
   _n[..., 2] = n[..., 0]
   n ^= (_n << u)
-
+  '''
+  x, y, z = np.dsplit(n, 3)
+  n ^= (np.dstack([y, z, x]) << u)
+  '''
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 2]
   _n[..., 2] = n[..., 0]
   n ^= (_n >> u)
-  #n ^= (n[..., [1, 2, 0]] >> u)
+  '''
+
+  x, y, z = np.dsplit(n, 3)
+  n ^= (np.dstack([y, z, x]) >> u)
 
   n *= k
-
+  '''
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 2]
   _n[..., 2] = n[..., 0]
   n ^= (_n << u)
-  #n ^= (n[..., [1, 2, 0]] << u)
+  '''
+  x, y, z = np.dsplit(n, 3)
+  n ^= (np.dstack([y, z, x]) << u)
   return n * k
 
 
@@ -138,7 +159,6 @@ def hash31(p: np.array) -> np.array:
 
 def vnoise21_n(p: np.array) -> np.array:
   n = np.floor(p)
-  #v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
   v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
   f = p - n
   return np_mix(
@@ -149,7 +169,6 @@ def vnoise21_n(p: np.array) -> np.array:
 
 def vnoise21_f(p: np.array) -> np.array:
   n = np.floor(p)
-  #v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
   v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
   f = p - n
   f = f * f * (3.0 - 2.0 * f)
@@ -161,7 +180,6 @@ def vnoise21_f(p: np.array) -> np.array:
 
 def vnoise31(p: np.array) -> np.array:
   n = np.floor(p)
-  #v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product(_xy, repeat=3)]
   v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product_list3]
   f = p - n
   f = f * f * (3.0 - 2.0 * f)
@@ -185,7 +203,6 @@ def imageP2uint8_convert(_rgb):
 def profile_run():
   canvas_px = np.zeros((width_size, height_size, COLOR_CH)).astype(np.uint8)
   fragCoord = FragCoord(width_size, height_size)
-  # pos = (fragCoord * 2.0 - sq_size) / sq_size
   pos = fragCoord / sq_size
   pos = 10.0 * pos + u_time
 
