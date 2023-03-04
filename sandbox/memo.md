@@ -1,3 +1,55 @@
+# 📝 2023/03/04
+
+
+```text
+         239 function calls in 0.260 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        8    0.102    0.013    0.109    0.014 230304_1943.py:92(uhash33)
+        8    0.063    0.008    0.068    0.008 230304_1943.py:72(uhash22)
+        1    0.023    0.023    0.143    0.143 230304_1943.py:165(<listcomp>)
+       48    0.011    0.000    0.011    0.000 {method 'copy' of 'numpy.ndarray' objects}
+       13    0.011    0.001    0.011    0.001 230304_1943.py:39(np_mix)
+       19    0.010    0.001    0.010    0.001 {method 'astype' of 'numpy.ndarray' objects}
+       18    0.007    0.000    0.007    0.000 {built-in method multiarray.array}
+        1    0.006    0.006    0.044    0.044 230304_1943.py:142(<listcomp>)
+        1    0.006    0.006    0.044    0.044 230304_1943.py:153(<listcomp>)
+        1    0.005    0.005    0.153    0.153 230304_1943.py:162(vnoise31)
+        1    0.003    0.003    0.049    0.049 230304_1943.py:150(vnoise21_f)
+        1    0.002    0.002    0.260    0.260 230304_1943.py:185(profile_run)
+        8    0.002    0.000    0.120    0.015 230304_1943.py:133(hash31)
+        3    0.002    0.001    0.002    0.001 230304_1943.py:178(imageP2uint8_convert)
+        8    0.002    0.000    0.076    0.009 230304_1943.py:127(hash21)
+        1    0.002    0.002    0.002    0.002 function_base.py:3100(<listcomp>)
+        1    0.001    0.001    0.048    0.048 230304_1943.py:139(vnoise21_n)
+        1    0.000    0.000    0.003    0.003 230304_1943.py:48(FragCoord)
+        1    0.000    0.000    0.000    0.000 {built-in method multiarray.copyto}
+       16    0.000    0.000    0.000    0.000 {built-in method multiarray.frombuffer}
+        1    0.000    0.000    0.260    0.260 <string>:1(<module>)
+       16    0.000    0.000    0.007    0.000 230304_1943.py:33(np_floatBitsToUint)
+       19    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.005    0.005 230304_1943.py:170(<listcomp>)
+        2    0.000    0.000    0.002    0.001 230304_1943.py:43(_vec)
+        1    0.000    0.000    0.260    0.260 {built-in method builtins.exec}
+       16    0.000    0.000    0.000    0.000 fromnumeric.py:124(reshape)
+        1    0.000    0.000    0.002    0.002 function_base.py:2976(meshgrid)
+        3    0.000    0.000    0.000    0.000 {built-in method multiarray.empty}
+        2    0.000    0.000    0.000    0.000 {built-in method multiarray.arange}
+        1    0.000    0.000    0.000    0.000 shape_base.py:9(atleast_1d)
+        1    0.000    0.000    0.000    0.000 {built-in method multiarray.zeros}
+        1    0.000    0.000    0.000    0.000 numeric.py:137(ones)
+        2    0.000    0.000    0.000    0.000 numeric.py:463(asanyarray)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 function_base.py:3081(<listcomp>)
+        2    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+        3    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+        5    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+        1    0.000    0.000    0.000    0.000 function_base.py:3083(<listcomp>)
+```
+
+
 # 📝 2023/02/25
 
 ```text
