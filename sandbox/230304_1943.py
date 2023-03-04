@@ -20,24 +20,20 @@ width_size = sq_size
 height_size = sq_size
 
 RGB_SIZE = 255
-color_ch = 3
+COLOR_CH = 3
 
 u_time = 0.4321
 _xy = range(2)
+product_list2 = list(product(_xy, repeat=2))
+product_list3 = list(product(_xy, repeat=3))
 
 testImg_path = Path(f'./testImg/test_img{sq_size:03}.npy')
 
-f_pack = struct.Struct('>f')
-f_unpack = struct.Struct('>I')
 
-
-@lru_cache()
-def floatBitsToUint(f: float) -> int:
-  return f_unpack.unpack(f_pack.pack(f))[0]
-
-
-np_floatBitsToUint = np.vectorize(
-  floatBitsToUint, otypes=[np.uint32], cache=True)
+def np_floatBitsToUint(f: np.array) -> np.array:
+  shape = f.shape
+  return np.reshape(
+    np.frombuffer(np.array(f, dtype='f'), dtype=np.uint32), shape)
 
 
 def np_mix(x: np.array, y: np.array, a: np.array) -> np.array:
@@ -79,13 +75,10 @@ def uhash22(n: np.array) -> np.array:
   _n[..., 1] = n[..., 0]
   n ^= (_n << u[:2])
 
-  #n ^= (n[..., [1, 0]] << u[:2])
-
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 0]
   n ^= (_n >> u[:2])
-  #n ^= (n[..., [1, 0]] >> u[:2])
 
   n *= k[:2]
 
@@ -93,9 +86,6 @@ def uhash22(n: np.array) -> np.array:
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 0]
   n ^= (_n << u[:2])
-
-  #n ^= (n[..., [1, 0]] << u[:2])
-
   return n * k[:2]
 
 
@@ -106,14 +96,11 @@ def uhash33(n: np.array) -> np.array:
   _n[..., 2] = n[..., 0]
   n ^= (_n << u)
 
-  #n ^= (n[..., [1, 2, 0]] << u)
-
   _n = n.copy()
   _n[..., 0] = n[..., 1]
   _n[..., 1] = n[..., 2]
   _n[..., 2] = n[..., 0]
   n ^= (_n >> u)
-
   #n ^= (n[..., [1, 2, 0]] >> u)
 
   n *= k
@@ -123,7 +110,6 @@ def uhash33(n: np.array) -> np.array:
   _n[..., 1] = n[..., 2]
   _n[..., 2] = n[..., 0]
   n ^= (_n << u)
-
   #n ^= (n[..., [1, 2, 0]] << u)
   return n * k
 
@@ -152,7 +138,8 @@ def hash31(p: np.array) -> np.array:
 
 def vnoise21_n(p: np.array) -> np.array:
   n = np.floor(p)
-  v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
+  #v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
+  v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
   f = p - n
   return np_mix(
     np_mix(v[0], v[1], f[..., 0]),
@@ -162,7 +149,8 @@ def vnoise21_n(p: np.array) -> np.array:
 
 def vnoise21_f(p: np.array) -> np.array:
   n = np.floor(p)
-  v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
+  #v = [hash21(n + [_i, _j]) for _j, _i in product(_xy, repeat=2)]
+  v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
   f = p - n
   f = f * f * (3.0 - 2.0 * f)
   return np_mix(
@@ -173,7 +161,8 @@ def vnoise21_f(p: np.array) -> np.array:
 
 def vnoise31(p: np.array) -> np.array:
   n = np.floor(p)
-  v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product(_xy, repeat=3)]
+  #v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product(_xy, repeat=3)]
+  v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product_list3]
   f = p - n
   f = f * f * (3.0 - 2.0 * f)
 
@@ -194,7 +183,7 @@ def imageP2uint8_convert(_rgb):
 
 
 def profile_run():
-  canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
+  canvas_px = np.zeros((width_size, height_size, COLOR_CH)).astype(np.uint8)
   fragCoord = FragCoord(width_size, height_size)
   # pos = (fragCoord * 2.0 - sq_size) / sq_size
   pos = fragCoord / sq_size
@@ -256,7 +245,7 @@ def main(profile: bool=False):
               continue
 
     imgp = ImageP.fromarray(canvas)
-    is_show = 0
+    is_show = 1
     if is_show:
       imgp.show()
 
