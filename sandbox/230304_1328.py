@@ -199,7 +199,7 @@ def imageP2uint8_convert(_rgb):
   return _l
 
 
-canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
+canvas_px = np.zeros((width_size, height_size, COLOR_CH)).astype(np.uint8)
 fragCoord = FragCoord(width_size, height_size)
 
 pos = fragCoord / sq_size
