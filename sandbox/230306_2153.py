@@ -91,78 +91,17 @@ def uhash11(n: np.array) -> np.array:
 def uhash22(n: np.array) -> np.array:
   _u = u[:2]
   _k = k[:2]
-  '''
-  x, y = np.dsplit(n, 2)
-  n ^= (np.dstack([y, x]) << _u)
-
-  x, y = np.dsplit(n, 2)
-  n ^= (np.dstack([y, x]) >> _u)
-
-  n *= _k
-
-  x, y = np.dsplit(n, 2)
-  n ^= (np.dstack([y, x]) << _u)
-  '''
-  '''
-  _n = n.copy()
-  _n[..., 0] = n[..., 1]
-  _n[..., 1] = n[..., 0]
-  '''
   n ^= (switch_yx(n) << _u)
-  '''
-  _n = n.copy()
-  _n[..., 0] = n[..., 1]
-  _n[..., 1] = n[..., 0]
-  '''
   n ^= (switch_yx(n) >> _u)
-
   n *= _k
-  '''
-  _n = n.copy()
-  _n[..., 0] = n[..., 1]
-  _n[..., 1] = n[..., 0]
-  '''
-
   n ^= (switch_yx(n) << _u)
-
   return n * _k
 
 
 def uhash33(n: np.array) -> np.array:
-  '''
-  x, y, z = np.dsplit(n, 3)
-  n ^= (np.dstack([y, z, x]) << u)
-
-  x, y, z = np.dsplit(n, 3)
-  n ^= (np.dstack([y, z, x]) >> u)
-
-  n *= k
-
-  x, y, z = np.dsplit(n, 3)
-  n ^= (np.dstack([y, z, x]) << u)
-   '''
-  '''
-  _n = n.copy()
-  _n[..., 0] = n[..., 1]
-  _n[..., 1] = n[..., 2]
-  _n[..., 2] = n[..., 0]
-  '''
   n ^= (switch_yzx(n) << u)
-  '''
-  _n = n.copy()
-  _n[..., 0] = n[..., 1]
-  _n[..., 1] = n[..., 2]
-  _n[..., 2] = n[..., 0]
-  '''
   n ^= (switch_yzx(n) >> u)
-
   n *= k
-  '''
-  _n = n.copy()
-  _n[..., 0] = n[..., 1]
-  _n[..., 1] = n[..., 2]
-  _n[..., 2] = n[..., 0]
-  '''
   n ^= (switch_yzx(n) << u)
   return n * k
 
@@ -330,8 +269,8 @@ def main():
 
 
 if __name__ == '__main__':
-  is_profile = 0
-  is_show = 1
+  is_profile = 1
+  is_show = 0
 
   sq_size: int = 512
   width_size = sq_size
