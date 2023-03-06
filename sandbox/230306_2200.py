@@ -257,7 +257,8 @@ def convert_uint8_rgb(_rgb):
 
 
 def main():
-  canvas_px = convert_uint8_rgb(gl_main())
+  gl_canvas = gl_main()
+  canvas_px = convert_uint8_rgb(gl_canvas)
   imgp = ImageP.fromarray(canvas_px)
 
   if is_show:
