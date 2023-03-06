@@ -173,11 +173,11 @@ def vnoise31(p: np.array) -> np.array:
 def gnoise21(p: np.array) -> np.array:
   n: np.array = np.floor(p)
   f: np.array = np_fract(p)
-  v: list = list(range(4))
-  for j in range(2):
-    for i in range(2):
-      g = np_normalize(hash22(n + [i, j]) - 0.5)
-      v[i + 2 * j] = np_dot(g, f - [i, j])
+  v: list = [
+    np_dot(np_normalize(hash22(n + [_i, _j]) - 0.5), f - [_i, _j])
+    for _j, _i in product_list2
+  ]
+
   f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
   return 0.5 * np_mix(
     np_mix(
@@ -194,25 +194,25 @@ def gnoise21(p: np.array) -> np.array:
 def gnoise31(p: np.array) -> np.array:
   n: np.array = np.floor(p)
   f: np.array = np_fract(p)
-  v: list = list(range(8))
-  for _k in range(2):
-    for j in range(2):
-      for i in range(2):
-        g = np_normalize(hash33(n + [i, j, _k]) - 0.5)
-        v[i + 2 * j + 4 * _k] = np_dot(g, f - [i, j, _k])
+  v: list = [
+    np_dot(np_normalize(hash33(n + [_i, _j, _k]) - 0.5), f - [_i, _j, _k])
+    for _k, _j, _i in product_list3
+  ]
+
   f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
-  w: list = list(range(2))
-  for i in range(2):
-    w[i] = np_mix(
+  w: list = [
+    np_mix(
       np_mix(
-        v[4 * i],
-        v[4 * i + 1],
+        v[4 * _i],
+        v[4 * _i + 1],
         f[..., 0], ),
       np_mix(
-        v[4 * i + 2],
-        v[4 * i + 3],
+        v[4 * _i + 2],
+        v[4 * _i + 3],
         f[..., 0], ),
-      f[..., 1], )
+      f[..., 1], ) for _i in _xy
+  ]
+
   return 0.5 * np_mix(
     w[0],
     w[1],
