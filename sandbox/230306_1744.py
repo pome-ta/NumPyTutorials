@@ -12,51 +12,51 @@ product_list3 = list(product(_xy, repeat=3))
 
 
 def np_floatBitsToUint(f: np.array) -> np.array:
-  shape = f.shape
-  return np.reshape(
-    np.frombuffer(np.array(f, dtype='f'), dtype=np.uint32), shape)
+    shape = f.shape
+    return np.reshape(
+        np.frombuffer(np.array(f, dtype='f'), dtype=np.uint32), shape)
 
 
 def np_mix(x: np.array, y: np.array, a: np.array) -> np.array:
-  return (x * (1.0 - a)) + (y * a)
+    return (x * (1.0 - a)) + (y * a)
 
 
 def np_fract(p: np.array) -> np.array:
-  return np.mod(p, 1.0)
+    return np.mod(p, 1.0)
 
 
 def np_length(v: np.array) -> np.array:
-  _, _, _shape = v.shape
-  return np.sqrt(sum([np.square(v[..., _i]) for _i in range(_shape)]))
+    _, _, _shape = v.shape
+    return np.sqrt(sum([np.square(v[..., _i]) for _i in range(_shape)]))
 
 
 def np_normalize(v: np.array) -> np.array:
-  _, _, _shape = v.shape
-  _l = np_length(v)
-  return np.dstack([v[..., _i] / _l for _i in range(_shape)])
+    _, _, _shape = v.shape
+    _l = np_length(v)
+    return np.dstack([v[..., _i] / _l for _i in range(_shape)])
 
 
 def np_dot(v0: np.array, v1: np.array) -> np.array:
-  _, _, _shape = v0.shape
-  return sum([v0[..., _i] * v1[..., _i] for _i in range(_shape)])
+    _, _, _shape = v0.shape
+    return sum([v0[..., _i] * v1[..., _i] for _i in range(_shape)])
 
 
 def _vec(w: int, h: int, c: int) -> np.array:
-  return np.empty((w, h, c)).astype(np.float32)
+    return np.empty((w, h, c)).astype(np.float32)
 
 
 def vec2(f: float) -> np.array:
-  return np.full_like(_vec(width_size, height_size, 2), f)
+    return np.full_like(_vec(width_size, height_size, 2), f)
 
 
 def FragCoord(width, height) -> np.array:
-  _row = np.arange(0, width)
-  _col = _row[:np.newaxis]
-  _x, _y = np.meshgrid(_row, _col)
-  _pos = _vec(width, height, 2)
-  _pos[..., 0] = _x
-  _pos[..., 1] = _y
-  return _pos
+    _row = np.arange(0, width)
+    _col = _row[:np.newaxis]
+    _x, _y = np.meshgrid(_row, _col)
+    _pos = _vec(width, height, 2)
+    _pos[..., 0] = _x
+    _pos[..., 1] = _y
+    return _pos
 
 
 # start hash
@@ -66,223 +66,264 @@ u = np.array([1, 2, 3]).astype(np.uint32)
 
 
 def uhash11(n: np.array) -> np.array:
-  n ^= (n << u[0])
-  n ^= (n >> [0])
-  n *= k[0]
-  n ^= (n << [0])
-  return n * k[0]
+    n ^= (n << u[0])
+    n ^= (n >> [0])
+    n *= k[0]
+    n ^= (n << [0])
+    return n * k[0]
 
 
 def uhash22(n: np.array) -> np.array:
-  _u = u[:2]
-  _k = k[:2]
+    _u = u[:2]
+    _k = k[:2]
+    
+    '''
+    x, y = np.dsplit(n, 2)
+    n ^= (np.dstack([y, x]) << _u)
 
-  x, y = np.dsplit(n, 2)
-  n ^= (np.dstack([y, x]) << _u)
+    x, y = np.dsplit(n, 2)
+    n ^= (np.dstack([y, x]) >> _u)
 
-  x, y = np.dsplit(n, 2)
-  n ^= (np.dstack([y, x]) >> _u)
+    n *= _k
 
-  n *= _k
-
-  x, y = np.dsplit(n, 2)
-  n ^= (np.dstack([y, x]) << _u)
-  return n * _k
+    x, y = np.dsplit(n, 2)
+    n ^= (np.dstack([y, x]) << _u)
+    '''
+    
+    _n = n.copy()
+    _n[..., 0] = n[..., 1]
+    _n[..., 1] = n[..., 0]
+    n ^= (_n << _u)
+    
+    _n = n.copy()
+    _n[..., 0] = n[..., 1]
+    _n[..., 1] = n[..., 0]
+    n ^= (_n >> _u)
+    
+    n *= _k
+    
+    _n = n.copy()
+    _n[..., 0] = n[..., 1]
+    _n[..., 1] = n[..., 0]
+    n ^= (_n << _u)
+    
+    return n * _k
 
 
 def uhash33(n: np.array) -> np.array:
-  x, y, z = np.dsplit(n, 3)
-  n ^= (np.dstack([y, z, x]) << u)
+    '''
+    x, y, z = np.dsplit(n, 3)
+    n ^= (np.dstack([y, z, x]) << u)
 
-  x, y, z = np.dsplit(n, 3)
-  n ^= (np.dstack([y, z, x]) >> u)
+    x, y, z = np.dsplit(n, 3)
+    n ^= (np.dstack([y, z, x]) >> u)
 
-  n *= k
+    n *= k
 
-  x, y, z = np.dsplit(n, 3)
-  n ^= (np.dstack([y, z, x]) << u)
-  return n * k
+    x, y, z = np.dsplit(n, 3)
+    n ^= (np.dstack([y, z, x]) << u)
+   '''
+    
+    _n = n.copy()
+    _n[..., 0] = n[..., 1]
+    _n[..., 1] = n[..., 2]
+    _n[..., 2] = n[..., 0]
+    n ^= (_n << u)
+    
+    _n = n.copy()
+    _n[..., 0] = n[..., 1]
+    _n[..., 1] = n[..., 2]
+    _n[..., 2] = n[..., 0]
+    n ^= (_n >> u)
+    
+    n *= k
+    
+    _n = n.copy()
+    _n[..., 0] = n[..., 1]
+    _n[..., 1] = n[..., 2]
+    _n[..., 2] = n[..., 0]
+    n ^= (_n << u)
+    return n * k
 
 
 def hash11(p: np.array) -> np.array:
-  n = np_floatBitsToUint(p)
-  return uhash11(n).astype(np.float32) / float(UINT_MAX)
+    n = np_floatBitsToUint(p)
+    return uhash11(n).astype(np.float32) / float(UINT_MAX)
 
 
 def hash21(p: np.array) -> np.array:
-  n = np_floatBitsToUint(p)
-  _h22 = uhash22(n).astype(np.float32)
-  return _h22[..., 0] / float(UINT_MAX)
+    n = np_floatBitsToUint(p)
+    _h22 = uhash22(n).astype(np.float32)
+    return _h22[..., 0] / float(UINT_MAX)
 
 
 def hash31(p: np.array) -> np.array:
-  n = np_floatBitsToUint(p)
-  _h33 = uhash33(n).astype(np.float32)
-  return _h33[..., 0] / float(UINT_MAX)
+    n = np_floatBitsToUint(p)
+    _h33 = uhash33(n).astype(np.float32)
+    return _h33[..., 0] / float(UINT_MAX)
 
 
 def hash22(p: np.array) -> np.array:
-  n = np_floatBitsToUint(p)
-  return uhash22(n).astype(np.float32) / float(UINT_MAX)
+    n = np_floatBitsToUint(p)
+    return uhash22(n).astype(np.float32) / float(UINT_MAX)
 
 
 def hash33(p: np.array) -> np.array:
-  n = np_floatBitsToUint(p)
-  return uhash33(n).astype(np.float32) / float(UINT_MAX)
+    n = np_floatBitsToUint(p)
+    return uhash33(n).astype(np.float32) / float(UINT_MAX)
 
 
 # end hash
 
 
 def vnoise21_n(p: np.array) -> np.array:
-  n: np.array = np.floor(p)
-  v: list = [hash21(n + [_i, _j]) for _j, _i in product_list2]
-  f: np.array = p - n
-  return np_mix(
-    np_mix(v[0], v[1], f[..., 0]),
-    np_mix(v[2], v[3], f[..., 0]),
-    f[..., 1], )
+    n: np.array = np.floor(p)
+    v: list = [hash21(n + [_i, _j]) for _j, _i in product_list2]
+    f: np.array = p - n
+    return np_mix(
+        np_mix(v[0], v[1], f[..., 0]),
+        np_mix(v[2], v[3], f[..., 0]),
+        f[..., 1], )
 
 
 def vnoise21_f(p: np.array) -> np.array:
-  n = np.floor(p)
-  v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
-  f = p - n
-  f = f * f * (3.0 - 2.0 * f)
-  return np_mix(
-    np_mix(v[0], v[1], f[..., 0]),
-    np_mix(v[2], v[3], f[..., 0]),
-    f[..., 1], )
+    n = np.floor(p)
+    v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
+    f = p - n
+    f = f * f * (3.0 - 2.0 * f)
+    return np_mix(
+        np_mix(v[0], v[1], f[..., 0]),
+        np_mix(v[2], v[3], f[..., 0]),
+        f[..., 1], )
 
 
 def vnoise31(p: np.array) -> np.array:
-  n = np.floor(p)
-  v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product_list3]
-  f = p - n
-  f = f * f * (3.0 - 2.0 * f)
-
-  w = [
-    np_mix(
-      np_mix(v[4 * _i], v[4 * _i + 1], f[..., 0]),
-      np_mix(v[4 * _i + 2], v[4 * _i + 3], f[..., 0]), f[..., 1]) for _i in _xy
-  ]
-
-  return np_mix(w[0], w[1], f[..., 2])
+    n = np.floor(p)
+    v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product_list3]
+    f = p - n
+    f = f * f * (3.0 - 2.0 * f)
+    
+    w = [
+        np_mix(
+            np_mix(v[4 * _i], v[4 * _i + 1], f[..., 0]),
+            np_mix(v[4 * _i + 2], v[4 * _i + 3], f[..., 0]), f[..., 1]) for _i in _xy
+    ]
+    
+    return np_mix(w[0], w[1], f[..., 2])
 
 
 def gnoise21(p: np.array) -> np.array:
-  n: np.array = np.floor(p)
-  f: np.array = np_fract(p)
-  v: list = [
-    np_dot(np_normalize(hash22(n + [_i, _j]) - 0.5), f - [_i, _j])
-    for _j, _i in product_list2
-  ]
-
-  f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
-  return 0.5 * np_mix(
-    np_mix(
-      v[0],
-      v[1],
-      f[..., 0], ),
-    np_mix(
-      v[2],
-      v[3],
-      f[..., 0], ),
-    f[..., 1], ) + 0.5
+    n: np.array = np.floor(p)
+    f: np.array = np_fract(p)
+    v: list = [
+        np_dot(np_normalize(hash22(n + [_i, _j]) - 0.5), f - [_i, _j])
+        for _j, _i in product_list2
+    ]
+    
+    f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
+    return 0.5 * np_mix(
+        np_mix(
+            v[0],
+            v[1],
+            f[..., 0], ),
+        np_mix(
+            v[2],
+            v[3],
+            f[..., 0], ),
+        f[..., 1], ) + 0.5
 
 
 def gnoise31(p: np.array) -> np.array:
-  n: np.array = np.floor(p)
-  f: np.array = np_fract(p)
-  v: list = [
-    np_dot(np_normalize(hash33(n + [_i, _j, _k]) - 0.5), f - [_i, _j, _k])
-    for _k, _j, _i in product_list3
-  ]
-
-  f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
-  w: list = [
-    np_mix(
-      np_mix(
-        v[4 * _i],
-        v[4 * _i + 1],
-        f[..., 0], ),
-      np_mix(
-        v[4 * _i + 2],
-        v[4 * _i + 3],
-        f[..., 0], ),
-      f[..., 1], ) for _i in _xy
-  ]
-
-  return 0.5 * np_mix(
-    w[0],
-    w[1],
-    f[..., 2], ) + 0.5
+    n: np.array = np.floor(p)
+    f: np.array = np_fract(p)
+    v: list = [
+        np_dot(np_normalize(hash33(n + [_i, _j, _k]) - 0.5), f - [_i, _j, _k])
+        for _k, _j, _i in product_list3
+    ]
+    
+    f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
+    w: list = [
+        np_mix(
+            np_mix(
+                v[4 * _i],
+                v[4 * _i + 1],
+                f[..., 0], ),
+            np_mix(
+                v[4 * _i + 2],
+                v[4 * _i + 3],
+                f[..., 0], ),
+            f[..., 1], ) for _i in _xy
+    ]
+    
+    return 0.5 * np_mix(
+        w[0],
+        w[1],
+        f[..., 2], ) + 0.5
 
 
 def gl_main():
-  # pos = (fragCoord * 2.0 - sq_size) / sq_size
-  pos = fragCoord / sq_size
-  pos = 18.0 * pos + u_time
-  gn21 = gnoise21(pos)
-
-  vec3 = _vec(width_size, height_size, 3)
-  vec3[..., 0] = pos[..., 0]
-  vec3[..., 1] = pos[..., 1]
-  vec3[..., 2] = u_time
-
-  gn31 = gnoise31(vec3)
-
-  div_num = 2
-  split_num = int(sq_size / div_num)
-
-  for div in range(div_num):
-    u_color, s, e = [
-      gn31,
-      split_num,
-      sq_size,
-    ] if div else [
-      gn21,
-      0,
-      split_num,
-    ]
-    for c in range(COLOR_CH):
-      fragColor[..., s:e, c] = u_color[..., s:e]
-
-  return fragColor
+    # pos = (fragCoord * 2.0 - sq_size) / sq_size
+    pos = fragCoord / sq_size
+    pos = 18.0 * pos + u_time
+    gn21 = gnoise21(pos)
+    
+    vec3 = _vec(width_size, height_size, 3)
+    vec3[..., 0] = pos[..., 0]
+    vec3[..., 1] = pos[..., 1]
+    vec3[..., 2] = u_time
+    
+    gn31 = gnoise31(vec3)
+    
+    div_num = 2
+    split_num = int(sq_size / div_num)
+    
+    for div in range(div_num):
+        u_color, s, e = [
+            gn31,
+            split_num,
+            sq_size,
+        ] if div else [
+            gn21,
+            0,
+            split_num,
+        ]
+        for c in range(COLOR_CH):
+            fragColor[..., s:e, c] = u_color[..., s:e]
+    
+    return fragColor
 
 
 def convert_uint8_rgb(_rgb):
-  _l = _rgb * RGB_SIZE
-  _l[np.less(_l, 0)] = 0
-  _l[np.less(RGB_SIZE, _l)] = RGB_SIZE
-  return np.flipud(_l).astype(np.uint8)
+    _l = _rgb * RGB_SIZE
+    _l[np.less(_l, 0)] = 0
+    _l[np.less(RGB_SIZE, _l)] = RGB_SIZE
+    return np.flipud(_l).astype(np.uint8)
 
 
 def main():
-  canvas_px = convert_uint8_rgb(gl_main())
-  imgp = ImageP.fromarray(canvas_px)
-
-  is_show = 0
-  if is_show:
-    imgp.show()
+    canvas_px = convert_uint8_rgb(gl_main())
+    imgp = ImageP.fromarray(canvas_px)
+    
+    if is_show:
+        imgp.show()
 
 
 if __name__ == '__main__':
-  is_profile = 1
-
-  sq_size: int = 512
-  width_size = sq_size
-  height_size = sq_size
-
-  u_time = 0.4321
-  fragColor = _vec(width_size, height_size, COLOR_CH)
-  fragCoord = FragCoord(width_size, height_size)
-
-  if is_profile:
-    import cProfile
-
-    cProfile.run('main()', sort=1)
-  else:
-    main()
-  _ = 1
-
+    is_profile = 1
+    is_show = 0
+    
+    sq_size: int = 512
+    width_size = sq_size
+    height_size = sq_size
+    
+    u_time = 0.4321
+    fragColor = _vec(width_size, height_size, COLOR_CH)
+    fragCoord = FragCoord(width_size, height_size)
+    
+    if is_profile:
+        import cProfile
+        
+        cProfile.run('main()', sort=1)
+    else:
+        main()
+    _ = 1
