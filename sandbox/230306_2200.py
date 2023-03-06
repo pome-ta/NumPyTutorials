@@ -41,6 +41,20 @@ def np_dot(v0: np.array, v1: np.array) -> np.array:
   return sum([v0[..., _i] * v1[..., _i] for _i in range(_shape)])
 
 
+def np_min(v: np.array, a) -> np.array:
+  v[np.less(a, v)] = a
+  return v
+
+
+def np_max(v: np.array, a) -> np.array:
+  v[np.less(v, a)] = a
+  return v
+
+
+def np_clamp(v: np.array, a, b) -> np.array:
+  return np_min(np_max(v, a), b)
+
+
 def _vec(w: int, h: int, c: int) -> np.array:
   return np.empty((w, h, c)).astype(np.float32)
 
@@ -70,7 +84,33 @@ def switch_yzx(p: np.array) -> np.array:
   return _p
 
 
+def hsv2rgb(cx: np.array, cy: float, cz: float):
+  cx_vec3 = _vec(width_size, height_size, 3)
+  cx_vec3[..., 0] = cx
+  cx_vec3[..., 1] = cx
+  cx_vec3[..., 2] = cx
+  rgb_vec3 = _vec(width_size, height_size, 3)
+  rgb_vec3[..., 0] = 0.0
+  rgb_vec3[..., 1] = 4.0
+  rgb_vec3[..., 2] = 2.0
+  
+
+  _abs_mod = np.abs(np.mod(cx_vec3 * 6.0 + rgb_vec3, 6.0) - 3.0)
+  rgb = np_clamp(_abs_mod - 1.0, 0.0, 1.0)
+  
+  x_vec3 = _vec(width_size, height_size, 3)
+  x_vec3[..., 0] = 1.0
+  x_vec3[..., 1] = 1.0
+  x_vec3[..., 2] = 1.0
+  cy_vec3 = _vec(width_size, height_size, 3)
+  cy_vec3[..., 0] = cy
+  cy_vec3[..., 1] = cy
+  cy_vec3[..., 2] = cy
+  return cz * np_mix(x_vec3, rgb, cy_vec3)
+
+
 # start hash
+
 UINT_MAX = 0xffff_ffff
 k = np.array([0x456789ab, 0x6789ab45, 0x89ab4567]).astype(np.uint32)
 u = np.array([1, 2, 3]).astype(np.uint32)
@@ -132,21 +172,11 @@ def hash33(p: np.array) -> np.array:
 # end hash
 
 
-def vnoise21_n(p: np.array) -> np.array:
-  n: np.array = np.floor(p)
-  v: list = [hash21(n + [_i, _j]) for _j, _i in product_list2]
-  f: np.array = p - n
-  return np_mix(
-    np_mix(v[0], v[1], f[..., 0]),
-    np_mix(v[2], v[3], f[..., 0]),
-    f[..., 1], )
-
-
-def vnoise21_f(p: np.array) -> np.array:
+def vnoise21(p: np.array) -> np.array:
   n = np.floor(p)
   v = [hash21(n + [_i, _j]) for _j, _i in product_list2]
-  f = p - n
-  f = f * f * (3.0 - 2.0 * f)
+  f = np_fract(p)
+  f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
   return np_mix(
     np_mix(v[0], v[1], f[..., 0]),
     np_mix(v[2], v[3], f[..., 0]),
@@ -156,15 +186,13 @@ def vnoise21_f(p: np.array) -> np.array:
 def vnoise31(p: np.array) -> np.array:
   n = np.floor(p)
   v = [hash31(n + [_i, _j, _k]) for _k, _j, _i in product_list3]
-  f = p - n
-  f = f * f * (3.0 - 2.0 * f)
-
+  f = np_fract(p)
+  f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
   w = [
     np_mix(
       np_mix(v[4 * _i], v[4 * _i + 1], f[..., 0]),
       np_mix(v[4 * _i + 2], v[4 * _i + 3], f[..., 0]), f[..., 1]) for _i in _xy
   ]
-
   return np_mix(w[0], w[1], f[..., 2])
 
 
@@ -175,7 +203,6 @@ def gnoise21(p: np.array) -> np.array:
     np_dot(np_normalize(hash22(n + [_i, _j]) - 0.5), f - [_i, _j])
     for _j, _i in product_list2
   ]
-
   f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
   return 0.5 * np_mix(
     np_mix(
@@ -196,7 +223,6 @@ def gnoise31(p: np.array) -> np.array:
     np_dot(np_normalize(hash33(n + [_i, _j, _k]) - 0.5), f - [_i, _j, _k])
     for _k, _j, _i in product_list3
   ]
-
   f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
   w: list = [
     np_mix(
@@ -210,7 +236,6 @@ def gnoise31(p: np.array) -> np.array:
         f[..., 0], ),
       f[..., 1], ) for _i in _xy
   ]
-
   return 0.5 * np_mix(
     w[0],
     w[1],
@@ -221,15 +246,17 @@ def gl_main():
   # pos = (fragCoord * 2.0 - sq_size) / sq_size
   pos = fragCoord / sq_size
   pos = 18.0 * pos + u_time
-  gn21 = gnoise21(pos)
-
+  
   vec3 = _vec(width_size, height_size, 3)
   vec3[..., 0] = pos[..., 0]
   vec3[..., 1] = pos[..., 1]
   vec3[..., 2] = u_time
-
-  gn31 = gnoise31(vec3)
-
+  
+  v21 = vnoise21(pos)
+  v31 = vnoise31(vec3)
+  g21 = gnoise21(pos)
+  g31 = gnoise31(vec3)
+  '''
   div_num = 2
   split_num = int(sq_size / div_num)
 
@@ -245,6 +272,10 @@ def gl_main():
     ]
     for c in range(COLOR_CH):
       fragColor[..., s:e, c] = u_color[..., s:e]
+  '''
+  vvv = hsv2rgb(gn31, 1.0, 1.0)
+  for c in range(COLOR_CH):
+    fragColor[..., c] = vvv[..., c]
 
   return fragColor
 
@@ -266,8 +297,8 @@ def main():
 
 
 if __name__ == '__main__':
-  is_profile = 1
-  is_show = 0
+  is_profile = 0
+  is_show = 1
 
   sq_size: int = 512
   width_size = sq_size
