@@ -191,15 +191,48 @@ def gnoise21(p: np.array) -> np.array:
     f[..., 1], ) + 0.5
 
 
+def gnoise31(p: np.array) -> np.array:
+  n: np.array = np.floor(p)
+  f: np.array = np_fract(p)
+  v: list = list(range(8))
+  for _k in range(2):
+    for j in range(2):
+      for i in range(2):
+        g = np_normalize(hash33(n + [i, j, _k]) - 0.5)
+        v[i + 2 * j + 4 * _k] = np_dot(g, f - [i, j, _k])
+  f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
+  w: list = list(range(2))
+  for i in range(2):
+    w[i] = np_mix(
+      np_mix(
+        v[4 * i],
+        v[4 * i + 1],
+        f[..., 0], ),
+      np_mix(
+        v[4 * i + 2],
+        v[4 * i + 3],
+        f[..., 0], ),
+      f[..., 1], )
+  return 0.5 * np_mix(
+    w[0],
+    w[1],
+    f[..., 2], ) + 0.5
+
+
 def gl_main():
   # pos = (fragCoord * 2.0 - sq_size) / sq_size
   pos = fragCoord / sq_size
   pos = 18.0 * pos + u_time
-  gn21 = gnoise21(pos)
+  #gn21 = gnoise21(pos)
+  vec3 = _vec(width_size, height_size, 3)
+  vec3[..., 0] = pos[..., 0]
+  vec3[..., 1] = pos[..., 1]
+  vec3[..., 2] = u_time
+  gn31 = gnoise31(vec3)
 
-  fragColor[..., 0] = gn21
-  fragColor[..., 1] = gn21
-  fragColor[..., 2] = gn21
+  fragColor[..., 0] = gn31
+  fragColor[..., 1] = gn31
+  fragColor[..., 2] = gn31
   return fragColor
 
 
@@ -214,13 +247,13 @@ def main():
   canvas_px = convert_uint8_rgb(gl_main())
   imgp = ImageP.fromarray(canvas_px)
 
-  is_show = False
+  is_show = 1
   if is_show:
     imgp.show()
 
 
 if __name__ == '__main__':
-  is_profile = True
+  is_profile = 0
 
   sq_size: int = 512
   width_size = sq_size
