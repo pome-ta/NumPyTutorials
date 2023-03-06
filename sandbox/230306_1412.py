@@ -21,8 +21,28 @@ def np_mix(x: np.array, y: np.array, a: np.array) -> np.array:
   return (x * (1.0 - a)) + (y * a)
 
 
+def np_length(v: np.array) -> np.array:
+  _, _, _shape = v.shape
+  return np.sqrt(sum([np.square(v[..., _i]) for _i in range(_shape)]))
+
+
+def np_normalize(v: np.array) -> np.array:
+  _, _, _shape = v.shape
+  _l = np_length(v)
+  return np.dstack([v[..., _i] / _l for _i in range(_shape)])
+
+
+def np_dot(v0: np.array, v1: np.array) -> np.array:
+  _, _, _shape = v0.shape
+  return sum([v0[..., _i] * v1[..., _i] for _i in range(_shape)])
+
+
 def _vec(w: int, h: int, c: int) -> np.array:
   return np.empty((w, h, c)).astype(np.float32)
+
+
+def vec2(f: float) -> np.array:
+  return np.full_like(_vec(width_size, height_size, 2), f)
 
 
 def FragCoord(width, height) -> np.array:
@@ -110,29 +130,6 @@ def hash33(p: np.array) -> np.array:
 # end hash
 
 
-def g_noise21(p: np.array) -> np.array:
-  n: np.array = np.floor(p)
-  f: np.array = np.mod(p, 1.0)
-  _, _, _index = f.shape
-  v: list = []
-  for j in range(2):
-    for i in range(2):
-      g = np_normalize(hash22(n + [i, j]) - 0.5)
-      _ = 1
-      v[i + 2 * j] = sum([g[..., _i] * (f - [i, j]) for _i in range(_index)])
-  f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
-  return 0.5 * np_mix(
-    np_mix(
-      v[0],
-      v[1],
-      f[..., 0], ),
-    np_mix(
-      v[2],
-      v[3],
-      f[..., 1], ),
-    f[..., 1], ) + 0.5
-
-
 def vnoise21_n(p: np.array) -> np.array:
   n: np.array = np.floor(p)
   v: list = [hash21(n + [_i, _j]) for _j, _i in product_list2]
@@ -172,8 +169,12 @@ def vnoise31(p: np.array) -> np.array:
 def gl_main():
   pos = (fragCoord * 2.0 - sq_size) / sq_size
 
-  fragColor[..., 0] = pos[..., 0]
-  fragColor[..., 1] = pos[..., 1]
+  l = 0.1 / np_length(pos)
+  n = np_normalize(pos)
+  d = np_dot(vec2(1.0), pos)
+
+  fragColor[..., 0] = d
+  fragColor[..., 1] = 0.0
   fragColor[..., 2] = 0.0
   return fragColor
 
