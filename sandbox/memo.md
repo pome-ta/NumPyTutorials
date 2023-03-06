@@ -1,7 +1,87 @@
 
 # 📝 2023/03/06
 
-勾配ノイズ 21
+## 勾配ノイズ 31 `for`
+
+```text
+         3067 function calls in 0.331 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        8    0.095    0.012    0.110    0.014 230306_1712.py:93(uhash33)
+        1    0.058    0.058    0.242    0.242 230306_1712.py:194(gnoise31)
+        4    0.029    0.007    0.035    0.009 230306_1712.py:76(uhash22)
+       48    0.024    0.001    0.024    0.001 {built-in method multiarray.concatenate}
+        1    0.019    0.019    0.082    0.082 230306_1712.py:173(gnoise21)
+       24    0.017    0.001    0.017    0.001 {built-in method builtins.sum}
+       10    0.016    0.002    0.016    0.002 230306_1712.py:20(np_mix)
+       12    0.015    0.001    0.015    0.001 230306_1712.py:41(<listcomp>)
+        2    0.010    0.005    0.010    0.005 230306_1712.py:24(np_fract)
+       14    0.007    0.001    0.007    0.001 {method 'astype' of 'numpy.ndarray' objects}
+       12    0.007    0.001    0.007    0.001 230306_1712.py:36(<listcomp>)
+      273    0.006    0.000    0.006    0.000 {built-in method multiarray.array}
+       12    0.006    0.000    0.006    0.000 230306_1712.py:30(<listcomp>)
+        8    0.005    0.001    0.124    0.016 230306_1712.py:129(hash33)
+       12    0.005    0.000    0.017    0.001 230306_1712.py:28(np_length)
+        1    0.003    0.003    0.328    0.328 230306_1712.py:222(gl_main)
+        1    0.002    0.002    0.003    0.003 230306_1712.py:253(convert_uint8_rgb)
+        4    0.002    0.000    0.039    0.010 230306_1712.py:124(hash22)
+       12    0.001    0.000    0.027    0.002 230306_1712.py:39(np_dot)
+       36    0.000    0.000    0.002    0.000 shape_base.py:356(array_split)
+       36    0.000    0.000    0.001    0.000 shape_base.py:348(_replace_zero_by_x_arrays)
+       12    0.000    0.000    0.031    0.003 230306_1712.py:33(np_normalize)
+       96    0.000    0.000    0.000    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+        1    0.000    0.000    0.000    0.000 {method 'decode' of 'ImagingDecoder' objects}
+      128    0.000    0.000    0.000    0.000 shape_base.py:113(atleast_3d)
+       36    0.000    0.000    0.002    0.000 shape_base.py:407(split)
+        1    0.000    0.000    0.000    0.000 {built-in method _imaging.fill}
+        1    0.000    0.000    0.331    0.331 230306_1712.py:260(main)
+       36    0.000    0.000    0.000    0.000 {method 'cumsum' of 'numpy.ndarray' objects}
+      756    0.000    0.000    0.000    0.000 {built-in method builtins.len}
+       36    0.000    0.000    0.002    0.000 shape_base.py:594(dsplit)
+       12    0.000    0.000    0.006    0.001 230306_1712.py:14(np_floatBitsToUint)
+       12    0.000    0.000    0.000    0.000 {built-in method multiarray.frombuffer}
+       48    0.000    0.000    0.025    0.001 shape_base.py:298(dstack)
+       96    0.000    0.000    0.000    0.000 {method 'any' of 'numpy.ndarray' objects}
+       48    0.000    0.000    0.000    0.000 shape_base.py:346(<listcomp>)
+      225    0.000    0.000    0.000    0.000 numeric.py:463(asanyarray)
+        1    0.000    0.000    0.001    0.001 230306_1712.py:44(_vec)
+       96    0.000    0.000    0.000    0.000 _methods.py:33(_any)
+      228    0.000    0.000    0.000    0.000 fromnumeric.py:1454(shape)
+       96    0.000    0.000    0.000    0.000 fromnumeric.py:1730(sometrue)
+      132    0.000    0.000    0.000    0.000 fromnumeric.py:446(swapaxes)
+      132    0.000    0.000    0.000    0.000 {method 'swapaxes' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.000    0.000 {built-in method _imaging.raw_decoder}
+       12    0.000    0.000    0.000    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+        1    0.000    0.000    0.331    0.331 {built-in method builtins.exec}
+       12    0.000    0.000    0.000    0.000 fromnumeric.py:124(reshape)
+        1    0.000    0.000    0.000    0.000 Image.py:2162(fromarray)
+        1    0.000    0.000    0.331    0.331 <string>:1(<module>)
+      224    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+       36    0.000    0.000    0.000    0.000 {built-in method builtins.divmod}
+        1    0.000    0.000    0.000    0.000 Image.py:2024(new)
+        2    0.000    0.000    0.000    0.000 Image.py:496(__init__)
+        1    0.000    0.000    0.000    0.000 {built-in method multiarray.empty}
+        1    0.000    0.000    0.000    0.000 twodim_base.py:67(flipud)
+        1    0.000    0.000    0.000    0.000 Image.py:2053(frombytes)
+        1    0.000    0.000    0.000    0.000 Image.py:516(_new)
+        4    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}
+        1    0.000    0.000    0.000    0.000 Image.py:406(_getdecoder)
+        1    0.000    0.000    0.000    0.000 Image.py:724(frombytes)
+        1    0.000    0.000    0.000    0.000 {method 'setimage' of 'ImagingDecoder' objects}
+        1    0.000    0.000    0.000    0.000 {method 'copy' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 Image.py:2102(frombuffer)
+        1    0.000    0.000    0.000    0.000 _util.py:11(isStringType)
+        1    0.000    0.000    0.000    0.000 {built-in method builtins.getattr}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+
+
+```
+
+## 勾配ノイズ 21
 
 ```text
          863 function calls in 0.087 seconds
