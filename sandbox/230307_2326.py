@@ -234,6 +234,44 @@ def gnoise31(p: np.array) -> np.array:
     f[..., 2], ) + 0.5
 
 
+def gtable3(lattice: np.array, p: np.array) -> np.array:
+  px, py, pz = np.dsplit(p, 3)
+  n = np_floatBitsToUint(lattice)
+  ind = uhash33(n)[..., 0] >> 28
+  u = np.where(ind < 8, px, py)
+  v = np.where(ind < 4, py, np.where((ind == 12) | (ind == 14), px, pz))
+  a = np.where((ind & 1) == 1, u, u * (-1))
+  b = np.where((ind & 2) == 1, v, v * (-1))
+  return a + b
+
+
+def pnoise31(p: np.array) -> np.array:
+  n: np.array = np.floor(p)
+  f: np.array = np_fract(p)
+  v: list = [
+    gtable3(n + [_i, _j, _k], f - [_i, _j, _k]) * 0.70710678
+    for _k, _j, _i in product_list3
+  ]
+  f = f * f * f * (10.0 - 15.0 * f + 6.0 * f * f)
+  w: list = [
+    np_mix(
+      np_mix(
+        v[4 * _i],
+        v[4 * _i + 1],
+        f[..., 0], ),
+      np_mix(
+        v[4 * _i + 2],
+        v[4 * _i + 3],
+        f[..., 0], ),
+      f[..., 1], ) for _i in _xy
+  ]
+  return 0.5 * np_mix(
+    w[0],
+    w[1],
+    f[..., 2], ) + 0.5
+
+
+#0.70710678; //0.70710678 ≒ 1/sqrt(2)
 def gl_main():
   # pos = (fragCoord * 2.0 - sq_size) / sq_size
   pos = fragCoord / sq_size
@@ -242,48 +280,10 @@ def gl_main():
   vec3 = _vec(width_size, height_size, 3)
   vec3[..., 0], vec3[..., 1], vec3[..., 2] = [pos[..., 0], pos[..., 1], u_time]
 
-  v21 = vnoise21(pos)
-  v31 = vnoise31(vec3)
-  g21 = gnoise21(pos)
-  g31 = gnoise31(vec3)
-
-  div_num = 2
-  split_num = int(sq_size / div_num)
-  split_list = [
-    [
-      hsv2rgb(v21, 1.0, 1.0),
-      0,
-      split_num,
-      0,
-      split_num,
-    ],
-    [
-      hsv2rgb(v31, 1.0, 1.0),
-      split_num,
-      sq_size,
-      0,
-      split_num,
-    ],
-    [
-      hsv2rgb(g21, 1.0, 1.0),
-      0,
-      split_num,
-      split_num,
-      sq_size,
-    ],
-    [
-      hsv2rgb(g31, 1.0, 1.0),
-      split_num,
-      sq_size,
-      split_num,
-      sq_size,
-    ],
-  ]
-
-  for div in range(len(split_list)):
-    v, sx, ex, sy, ey = split_list[div]
-    for c in range(COLOR_CH):
-      fragColor[sx:ex, sy:ey, c] = v[sx:ex, sy:ey, c]
+  p31 = pnoise31(vec3)
+  print(p31.shape)
+  for c in range(COLOR_CH):
+    fragColor[..., c] = p31
 
   return fragColor
 
@@ -305,10 +305,10 @@ def main():
 
 
 if __name__ == '__main__':
-  is_profile = 1
-  is_show = 0
+  is_profile = 0
+  is_show = 1
 
-  sq_size: int = 512
+  sq_size: int = 128
   width_size = sq_size
   height_size = sq_size
 
