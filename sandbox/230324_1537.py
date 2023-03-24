@@ -136,7 +136,8 @@ def uhash33(n: np.array) -> np.array:
 
 def hash11(p: np.array) -> np.array:
   n = np_floatBitsToUint(p)
-  return uhash11(n).astype(np.float32) / float(UINT_MAX)
+  #return uhash11(n).astype(np.float32) / float(UINT_MAX)
+  return uhash11(n) / float(UINT_MAX)
 
 
 def hash21(p: np.array) -> np.array:
@@ -147,6 +148,7 @@ def hash21(p: np.array) -> np.array:
 
 def hash31(p: np.array) -> np.array:
   n = np_floatBitsToUint(p)
+  print(n)
   _h33 = uhash33(n).astype(np.float32)
   return _h33[..., 0] / float(UINT_MAX)
 
@@ -304,7 +306,9 @@ def gl_main():
   vec3[..., 0], vec3[..., 1], vec3[..., 2] = [pos[..., 0], pos[..., 1], u_time]
 
   # p31 = pnoise31(vec3)
-  g31 = hash11(vec3[..., 0])
+  #g31 = hash11(pos[..., 0])
+  g31 = hash31(vec3)
+  
   print(g31)
   # p21 = pnoise21(pos)
   for c in range(COLOR_CH):
