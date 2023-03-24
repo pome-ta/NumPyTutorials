@@ -109,11 +109,11 @@ u = np.array([1, 2, 3]).astype(np.uint32)
 
 
 def uhash11(n: np.array) -> np.array:
-  n ^= (n << u[0])
-  n ^= (n >> [0])
-  n *= k[0]
-  n ^= (n << [0])
-  return n * k[0]
+  n ^= (n << 1)  # n ^= (n << u[0])
+  n ^= (n >> 1)  # n ^= (n >> [0])
+  n *= 0x456789ab  # n *= k[0]
+  n ^= (n << 1)  # n ^= (n << [0])
+  return n * 0x456789ab  # return n * k[0]
 
 
 def uhash22(n: np.array) -> np.array:
@@ -136,8 +136,7 @@ def uhash33(n: np.array) -> np.array:
 
 def hash11(p: np.array) -> np.array:
   n = np_floatBitsToUint(p)
-  #return uhash11(n).astype(np.float32) / float(UINT_MAX)
-  return uhash11(n) / float(UINT_MAX)
+  return uhash11(n).astype(np.float32) / float(UINT_MAX)
 
 
 def hash21(p: np.array) -> np.array:
@@ -148,7 +147,6 @@ def hash21(p: np.array) -> np.array:
 
 def hash31(p: np.array) -> np.array:
   n = np_floatBitsToUint(p)
-  print(n)
   _h33 = uhash33(n).astype(np.float32)
   return _h33[..., 0] / float(UINT_MAX)
 
@@ -306,10 +304,12 @@ def gl_main():
   vec3[..., 0], vec3[..., 1], vec3[..., 2] = [pos[..., 0], pos[..., 1], u_time]
 
   # p31 = pnoise31(vec3)
-  #g31 = hash11(pos[..., 0])
-  g31 = hash31(vec3)
+  _g31 = hash11(pos[..., 0])
+  g31 = _g31 * 2.0 - 1.0
   
-  print(g31)
+  #g31 = hash31(vec3)
+
+  print(np.mean(g31))
   # p21 = pnoise21(pos)
   for c in range(COLOR_CH):
     fragColor[..., c] = g31
@@ -335,7 +335,7 @@ def main():
 
 if __name__ == '__main__':
   is_profile = 0
-  is_show = 1
+  is_show = 0
 
   sq_size: int = 512
   width_size = sq_size
