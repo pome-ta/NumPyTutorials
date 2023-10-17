@@ -16,7 +16,17 @@ print(np.__version__)  # 1.22.3
 
 ```
 
-ちょっと別だけども、今後使うかも
+
+
+
+## メモリレイアウト
+
+[図解 MemoryLayout<T>で解き明かす型のメモリー構成 #Swift - Qiita](https://qiita.com/ysn/items/3995c782a92517e86903)
+
+
+## 蛇足
+
+ちょっと別だけども、今後使うかも
 
 
 [pythonでCの関数だけではなく、構造体も参照する方法 #Python3 - Qiita](https://qiita.com/t-aikawa/items/466e70e670cad33906e4)
