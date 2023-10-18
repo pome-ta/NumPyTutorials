@@ -1,15 +1,23 @@
 import numpy as np
 
-v = np.dtype({
-  'names': [
-    'color',
-    'ambientIntensity',
-    'diffuseIntensity',
-    'direction',
-  ],
-  'formats': ['i4', 'f4'],
-  'offsets': [0, 4],
-  'itemsize':
-  12
-})
+vector_float4 = np.dtype(
+  {
+    'names': [
+      'x',
+      'y',
+      'z',
+      'w',
+    ],
+    'formats': [
+      np.float32,
+      np.float32,
+      np.float32,
+      np.float32,
+    ],
+    'offsets': [o * 4 for o in range(4)],
+    'itemsize': 16,
+  },
+  align=True)
+
+Vertex = np.dtype([('position', vector_float4), ('color', vector_float4)])
 
