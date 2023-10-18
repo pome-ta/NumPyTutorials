@@ -34,7 +34,7 @@ Vertex = np.dtype({
 })
 
 #vertexData = np.array([[-0.5, -0.5, 0.0, 1.0], [1, 0, 0, 1]], dtype=Vertex)
-
+'''
 bf_array = [[
   [-0.5, -0.5, 0.0, 1.0],
   [1.0, 0.0, 0.0, 1.0],
@@ -46,5 +46,13 @@ bf_array = [[
   [0.0, 0.0, 1.0, 1.0],
 ]]
 
-vertexData = np.array(bf_array, dtype=Vertex)
+#vertexData = np.array(bf_array, dtype=Vertex)
 
+
+#position = np.array((-0.5, -0.5, 0.0, 1.0), dtype=vector_float4)
+position = np.array([-0.5, -0.5, 0.0, 1.0], dtype=vector_float4)
+
+print(position['x'])
+'''
+
+vertexData = np.array(([-0.5, -0.5, 0.0, 1.0], [1, 0, 0, 1]), dtype=Vertex)

@@ -14,8 +14,8 @@ vector_float4 = np.dtype(
       np.float32,
       np.float32,
     ],
-    'offsets': [o * 4 for o in range(4)],
-    'itemsize': 16,
+    #'offsets': [o * 4 for o in range(4)],
+    #'itemsize': 16,
   },
   align=False)
 
@@ -46,5 +46,10 @@ bf_array = [[
   [0.0, 0.0, 1.0, 1.0],
 ]]
 
-vertexData = np.array(bf_array, dtype=Vertex)
+#vertexData = np.array(bf_array, dtype=Vertex)
+
+
+position = np.array([-0.5, -0.5, 0.0, 1.0], dtype=vector_float4)
+
+
 
