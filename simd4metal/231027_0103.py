@@ -21,4 +21,10 @@ vertices = oldVertices * scale
 print(oldVertices.strides)
 print(oldVertices.size)
 print(UInt16.itemsize)
+print(oldVertices.ctypes)
+print(dir(Float))
+print(Float.alignment)
+print(UInt16.alignment)
+print(Float.byteorder)
+print(Float.itemsize)
 
