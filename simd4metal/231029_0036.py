@@ -18,6 +18,7 @@ oldVertices = np.array(
 scale = 0.8
 vertices = oldVertices * scale
 #print(dir(oldVertices))
+'''
 print(oldVertices.strides)
 print(oldVertices.size)
 print(UInt16.itemsize)
@@ -27,4 +28,9 @@ print(Float.alignment)
 print(UInt16.alignment)
 print(Float.byteorder)
 print(Float.itemsize)
+'''
 
+
+one =np.array(0, dtype=Float)
+one += 0.05
+#one = one + 1.0
