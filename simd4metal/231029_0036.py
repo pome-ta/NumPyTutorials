@@ -33,4 +33,9 @@ print(Float.itemsize)
 
 one =np.array(0, dtype=Float)
 one += 0.05
-#one = one + 1.0
+
+c = np.sin(one)
+#cc = np.sin(c)
+#print(dir(c))
+
+print(c.byteswap)
