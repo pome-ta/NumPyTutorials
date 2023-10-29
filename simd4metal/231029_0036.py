@@ -37,5 +37,10 @@ one += 0.05
 c = np.sin(one)
 #cc = np.sin(c)
 #print(dir(c))
+#cc = np.array(c, dtype=Float)
 
-print(c.byteswap)
+#print(c.byteswap)
+#print(dir(cc))
+#print(dir(c))
+#print(c.tobytes)
+print(one.ctypes)
