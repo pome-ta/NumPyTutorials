@@ -38,6 +38,7 @@ scale = 0.8
 #a = vertices * np.array((scale), dtype=PackedFloat3)
 
 #a = np.array([-1,  1,  0,], dtype=PackedFloat3)
+'''
 vertices = np.array(
   [
     (-1,  1,  0,),
@@ -46,6 +47,7 @@ vertices = np.array(
     ( 1, -1,  0,),
   ],
 dtype=PackedFloat3)  # yapf: disable
+'''
 
 #print(vertices.size)
 
@@ -53,9 +55,42 @@ dtype=PackedFloat3)  # yapf: disable
 
 #a = vertices * np.array((scale), dtype=PackedFloat3)
 #print(dir(vertices))
+'''
+__vertices = [
+  np.array((-1,  1,  0,), dtype=Float),
+  np.array(( 1,  1,  0,), dtype=Float),
+  np.array((-1, -1,  0,), dtype=Float),
+  np.array(( 1, -1,  0,), dtype=Float),
+]  # yapf: disable
 
-for i in vertices:
-  #print(dir(i))
-  i * scale
+_vertices = [v * scale for v in __vertices]
+'''
 
+'''
+_vertices = [
+  [-1,  1,  0,],
+  [ 1,  1,  0,],
+  [ 1, -1,  0,],
+  [ 1, -1,  0,],
+]  # # yapf: disable
+
+_vertices = [
+  (-1,  1,  0,),
+  ( 1,  1,  0,),
+  ( 1, -1,  0,),
+  ( 1, -1,  0,),
+]  # # yapf: disable
+'''
+
+
+#vertices = np.array(_vertices, dtype=PackedFloat3)
+
+vertices = np.array(
+  [
+    np.array((-1,  1,  0,), dtype=Float),
+    np.array(( 1,  1,  0,), dtype=Float),
+    np.array((-1, -1,  0,), dtype=Float),
+    np.array(( 1, -1,  0,), dtype=Float),
+  ], dtype=PackedFloat3
+)  # yapf: disable
 
