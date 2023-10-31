@@ -52,4 +52,10 @@ dtype=PackedFloat3)  # yapf: disable
 #a = np.frompyfunc(lambda x, )
 
 #a = vertices * np.array((scale), dtype=PackedFloat3)
+#print(dir(vertices))
+
+for i in vertices:
+  #print(dir(i))
+  i * scale
+
 
