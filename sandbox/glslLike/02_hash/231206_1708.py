@@ -82,6 +82,8 @@ def uhash22(n: np.array) -> np.array:
   return n * k[:2]
 
 
+'''
+
 def uhash33(n: np.array) -> np.array:
   _n = n.copy()
   _n[..., 0] = n[..., 1]
@@ -104,15 +106,19 @@ def uhash33(n: np.array) -> np.array:
   n ^= (_n << u)
   return n * k
 
+'''
+
 
 def hash22(p: np.array) -> np.array:
   n = np_floatBitsToUint(p)
   return uhash22(n).astype(np.float32) / float(UINT_MAX)
 
 
+'''
 def hash33(p: np.array) -> np.array:
   n = np_floatBitsToUint(p)
   return uhash33(n).astype(np.float32) / float(UINT_MAX)
+'''
 
 
 def hash21(p: np.array) -> np.array:
@@ -121,11 +127,12 @@ def hash21(p: np.array) -> np.array:
   return _h22[..., 0] / float(UINT_MAX)
 
 
+'''
 def hash31(p: np.array) -> np.array:
   n = np_floatBitsToUint(p)
   _h33 = uhash33(n).astype(np.float32)
   return _h33[..., 0] / float(UINT_MAX)
-
+'''
 
 pos = FragCoord(width_size, height_size)
 vec3 = _vec(width_size, height_size, 3)
@@ -134,6 +141,7 @@ vec3[..., 1] = pos[..., 1]
 vec3[..., 2] = u_time
 
 h21 = hash21(pos)
+#h11 = hash11(pos)
 
 canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
 
