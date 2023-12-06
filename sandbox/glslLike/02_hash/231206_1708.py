@@ -9,7 +9,7 @@ UINT_MAX = 0xffff_ffff
 k = np.array([0x456789ab, 0x6789ab45, 0x89ab4567]).astype(np.uint32)
 u = np.array([1, 2, 3]).astype(np.uint32)
 
-sq_size: int = 512
+sq_size: int = 32
 
 width_size = sq_size
 height_size = sq_size
@@ -135,13 +135,9 @@ def hash31(p: np.array) -> np.array:
 '''
 
 pos = FragCoord(width_size, height_size)
-vec3 = _vec(width_size, height_size, 3)
-vec3[..., 0] = pos[..., 0]
-vec3[..., 1] = pos[..., 1]
-vec3[..., 2] = u_time
 
 h21 = hash21(pos)
-#h11 = hash11(pos)
+#h11 = hash11(pos[0])
 
 canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
 
