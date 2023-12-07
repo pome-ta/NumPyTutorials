@@ -17,7 +17,7 @@ height_size = sq_size
 RGB_SIZE = 255
 color_ch = 3
 
-
+# ノイズ操作
 fu_pack = struct.Struct('>f')
 fu_unpack = struct.Struct('>I')
 
@@ -45,9 +45,11 @@ def hash11(p: np.array) -> np.array:
   return uhash11(n).astype(np.float32) / float(UINT_MAX)
 
 
-h11 = hash11([list(range(sq_size))])
+
+# main
 
 canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
+h11 = hash11([list(range(sq_size))])
 
 for c in range(color_ch):
   canvas_px[:, :, c] = h11 * RGB_SIZE
