@@ -45,11 +45,11 @@ def hash11(p: np.array) -> np.array:
   return uhash11(n).astype(np.float32) / float(UINT_MAX)
 
 
-
 # main
 
 canvas_px = np.zeros((width_size, height_size, 3)).astype(np.uint8)
-h11 = hash11([list(range(sq_size))])
+i11 = list(range(sq_size))
+h11 = hash11([i11])
 
 for c in range(color_ch):
   canvas_px[:, :, c] = h11 * RGB_SIZE
