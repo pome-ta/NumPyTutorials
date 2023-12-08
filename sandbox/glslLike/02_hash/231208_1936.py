@@ -34,6 +34,5 @@ if __name__ == "__main__":
   # l_float = list(map(float, range(length_size)))
   l_float = [float(f) for f in range(length_size)]
   h11 = hash11(l_float)
-
   print(h11)
 
