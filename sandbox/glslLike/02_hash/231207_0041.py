@@ -33,21 +33,16 @@ np_floatBitsToUint = np.vectorize(floatBitsToUint,
 
 
 def uhash11(n: np.array) -> np.array:
-  '''
   n ^= (n << 1)
   n ^= (n >> 1)
   n *= k
   n ^= (n << 1)
-  '''
-  _n = n.copy()
-  n ^= (n << 1)
-  n ^= (n >> 1)
-  n *= k
-  n ^= (n << 1)
+  
   return n * k
 
 
 def hash11(p: np.array) -> np.array:
+  print(p)
   n = np_floatBitsToUint(p)
   return uhash11(n).astype(np.float32) / float(UINT_MAX)
 
