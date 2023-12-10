@@ -21,9 +21,7 @@ def uhash11(n: np.ndarray) -> np.ndarray:
   n ^= n >> 1
   n *= k
   n ^= n << 1
-  u_list = n * k
-  #print(u_list)
-  return u_list
+  return n * k
 
 
 def hash11(p: list[float]) -> np.ndarray:
