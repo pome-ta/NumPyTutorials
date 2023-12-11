@@ -31,11 +31,18 @@ k = 0x4567_89AB
 
 
 def uhash11(n: np.ndarray) -> np.ndarray:
+  print(f'0:{n=}')
   n ^= n << 1
+  print(f'1:{n=}')
   n ^= n >> 1
+  print(f'2:{n=}')
   n *= k
+  print(f'3:{n=}')
   n ^= n << 1
-  return n * k
+  print(f'4:{n=}')
+  nk = n*k
+  print(f'{nk=}')
+  return nk
 
 
 def hash11(p: list[float]) -> np.ndarray:
@@ -44,9 +51,11 @@ def hash11(p: list[float]) -> np.ndarray:
 
 
 if __name__ == "__main__":
+  '''
   size: int = 8
   l_float: list[float] = [float(f) for f in range(size)]
   h11 = hash11(l_float)
-  #h11 = hash11([1.0])
+  '''
+  h11 = hash11([1.0])
   print(f'{h11=}')
 
