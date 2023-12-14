@@ -59,8 +59,18 @@ def uhash11(n: np.ndarray) -> np.ndarray:
   out_bin(n[0], '*')
   print('-' * 32)
 
-  n ^= n << 1
+  out_bin(n[0], 'null')
+  _n = n << 1
+  out_bin(_n[0], '<<')
+  n ^= _n
+  out_bin(n[0], '^')
+  print('-' * 32)
+
+  out_bin(n[0], 'null')
+  out_bin(k, 'k')
   nk = n * k
+  out_bin(nk[0], '^')
+  print('-' * 32)
   return nk
 
 
