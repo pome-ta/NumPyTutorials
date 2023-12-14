@@ -37,37 +37,30 @@ def out_bin(u32, memo=''):
 def uhash11(n: np.ndarray) -> np.ndarray:
   out_bin(UINT_MAX)
   out_bin(k)
-  print('---')
-  #print(f'0:{n=}')
+  print('=' * 32)
 
   out_bin(n[0], 'null')
   _n = n << 1
   out_bin(_n[0], '<<')
   n ^= _n
-  #print(f'1:{n=}')
-  #print(bin(n[0]))
   out_bin(n[0], '^')
+  print('-' * 32)
+
+  out_bin(n[0], 'null')
   _n = n >> 1
   out_bin(_n[0], '>>')
-  out_bin(n[0], 'null')
-  
-
   n ^= _n
-  #print(f'2:{n=}')
-  #print(bin(n[0]))
   out_bin(n[0], '^')
+  print('-' * 32)
+
+  out_bin(n[0], 'null')
+  out_bin(k, 'k')
   n *= k
-  #print(f'3:{n=}')
-  #print(bin(n[0]))
   out_bin(n[0], '*')
+  print('-' * 32)
+
   n ^= n << 1
-  #print(f'4:{n=}')
-  #print(bin(n[0]))
-  out_bin(n[0])
   nk = n * k
-  #print(f'{nk=}')
-  #print(bin(nk[0]))
-  out_bin(n[0])
   return nk
 
 
@@ -84,4 +77,5 @@ if __name__ == "__main__":
   '''
   h11 = hash11([1.0])
   print(f'{h11=}')
+  print('')
 
