@@ -15,10 +15,10 @@ def floatBitsToUint(f: float) -> int:
   #return fu_unpack.unpack(fu_pack.pack(f))[0]
   #f_p = fu_pack.pack(f)
   f_p = struct.pack('>f', f)
-  print(f'{f_p=}')
+  #print(f'{f_p=}')
   #f_u = fu_unpack.unpack(f_p)
   f_u = struct.unpack('>I', f_p)
-  print(f'{f_u=}')
+  #print(f'{f_u=}')
   return f_u[0]
 
 
@@ -30,23 +30,42 @@ UINT_MAX = 0xFFFF_FFFF
 k = 0x4567_89AB
 
 
+def out_bin(u32, memo=''):
+  print(format(u32, '032b'), memo)
+
+
 def uhash11(n: np.ndarray) -> np.ndarray:
-  print(f'0:{n=}')
-  n ^= n << 1
-  print(f'1:{n=}')
-  print(bin(n[0]))
-  n ^= n >> 1
-  print(f'2:{n=}')
-  print(bin(n[0]))
+  out_bin(UINT_MAX)
+  out_bin(k)
+  print('---')
+  #print(f'0:{n=}')
+
+  out_bin(n[0], 'null')
+  _n = n << 1
+  out_bin(_n[0], '<<')
+  n ^= _n
+  #print(f'1:{n=}')
+  #print(bin(n[0]))
+  out_bin(n[0], '^')
+  _n = n >> 1
+  out_bin(_n[0], '>>')
+
+  n ^= _n
+  #print(f'2:{n=}')
+  #print(bin(n[0]))
+  out_bin(n[0], '^')
   n *= k
-  print(f'3:{n=}')
-  print(bin(n[0]))
+  #print(f'3:{n=}')
+  #print(bin(n[0]))
+  out_bin(n[0], '*')
   n ^= n << 1
-  print(f'4:{n=}')
-  print(bin(n[0]))
-  nk = n*k
-  print(f'{nk=}')
-  print(bin(nk[0]))
+  #print(f'4:{n=}')
+  #print(bin(n[0]))
+  out_bin(n[0])
+  nk = n * k
+  #print(f'{nk=}')
+  #print(bin(nk[0]))
+  out_bin(n[0])
   return nk
 
 
